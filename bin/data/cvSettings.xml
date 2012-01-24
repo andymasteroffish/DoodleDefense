@@ -1,0 +1,144 @@
+<VIDEO_SETTINGS>
+    <val_0>0.000000</val_0>
+</VIDEO_SETTINGS>
+<HUERANGE>
+    <val_0>11.333334</val_0>
+</HUERANGE>
+<SATRANGE>
+    <val_0>121.833336</val_0>
+</SATRANGE>
+<VALRANGE>
+    <val_0>46.750000</val_0>
+</VALRANGE>
+<RECTX>
+    <val_0>1850.000000</val_0>
+</RECTX>
+<RECTY>
+    <val_0>175.000000</val_0>
+</RECTY>
+<RECTSCALE>
+    <val_0>1.166667</val_0>
+</RECTSCALE>
+<TL_X>
+    <val_0>117.422272</val_0>
+</TL_X>
+<TL_Y>
+    <val_0>55.093338</val_0>
+</TL_Y>
+<TR_X>
+    <val_0>566.444458</val_0>
+</TR_X>
+<TR_Y>
+    <val_0>73.879990</val_0>
+</TR_Y>
+<BR_X>
+    <val_0>630.008911</val_0>
+</BR_X>
+<BR_Y>
+    <val_0>417.706696</val_0>
+</BR_Y>
+<BL_X>
+    <val_0>41.199989</val_0>
+</BL_X>
+<BL_Y>
+    <val_0>401.066650</val_0>
+</BL_Y>
+<BTHRESHOLD>
+    <val_0>46.750000</val_0>
+</BTHRESHOLD>
+<PROJX>
+    <val_0>1885.801392</val_0>
+</PROJX>
+<PROJY>
+    <val_0>60.000004</val_0>
+</PROJY>
+<PROJSCALE>
+    <val_0>0.495555</val_0>
+</PROJSCALE>
+<MAXBGDIFF>
+    <val_0>1277.777832</val_0>
+</MAXBGDIFF>
+<PICTURETIME>
+    <val_0>25.000000</val_0>
+</PICTURETIME>
+<PICTUREDELAY>
+    <val_0>20.555555</val_0>
+</PICTUREDELAY>
+<BLACKVAL>
+    <val_0>0.203111</val_0>
+</BLACKVAL>
+<RVAL>
+    <val_0>2.500000</val_0>
+</RVAL>
+<GVAL>
+    <val_0>3.499993</val_0>
+</GVAL>
+<BVAL>
+    <val_0>3.000000</val_0>
+</BVAL>
+<RH>
+    <val_0>0.000000</val_0>
+</RH>
+<RS>
+    <val_0>253.000000</val_0>
+</RS>
+<RV>
+    <val_0>189.000000</val_0>
+</RV>
+<GH>
+    <val_0>83.000000</val_0>
+</GH>
+<GS>
+    <val_0>250.000000</val_0>
+</GS>
+<GV>
+    <val_0>59.000000</val_0>
+</GV>
+<BH>
+    <val_0>0.000000</val_0>
+</BH>
+<BS>
+    <val_0>238.000000</val_0>
+</BS>
+<BV>
+    <val_0>61.000000</val_0>
+</BV>
+<INKREFUND>
+    <val_0>300.000000</val_0>
+</INKREFUND>
+<HUDX>
+    <val_0>350.000000</val_0>
+</HUDX>
+<HUDY>
+    <val_0>62.665649</val_0>
+</HUDY>
+<MAXCOMPACT>
+    <val_0>1.844445</val_0>
+</MAXCOMPACT>
+<RHUERANGE>
+    <val_0>45.333336</val_0>
+</RHUERANGE>
+<RSATRANGE>
+    <val_0>62.333332</val_0>
+</RSATRANGE>
+<RVALRANGE>
+    <val_0>131.750000</val_0>
+</RVALRANGE>
+<GHUERANGE>
+    <val_0>21.250000</val_0>
+</GHUERANGE>
+<GSATRANGE>
+    <val_0>69.416664</val_0>
+</GSATRANGE>
+<GVALRANGE>
+    <val_0>55.250000</val_0>
+</GVALRANGE>
+<BHUERANGE>
+    <val_0>22.666668</val_0>
+</BHUERANGE>
+<BSATRANGE>
+    <val_0>52.416668</val_0>
+</BSATRANGE>
+<BVALRANGE>
+    <val_0>26.916666</val_0>
+</BVALRANGE>

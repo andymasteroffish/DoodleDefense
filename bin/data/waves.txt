@@ -1,0 +1,73 @@
+new 1
+dur 3000
+add norm 1500
+mes Start drawing
+
+new 1
+dur 40
+add norm 15
+mes Start drawing
+
+new 1
+dur 60
+add norm 30
+add fast 9 
+mes Watch out for#fast invaders
+
+new 2
+dur 60
+add heavy 11
+mes Heavies take#more damage#to kill
+
+new 2
+dur 60
+add norm 30
+mes knock knock
+
+new 2
+dur 80
+add norm 30
+add fast 8
+add heavy 8
+rand
+mes knock knock
+
+new 3
+dur 30
+add stealth 9
+add norm 22
+rand
+mes They can go#through walls?
+
+new 3
+dur 30
+add norm 24
+add immune_red 10
+rand
+mes Hope you don't#use too much red
+
+new 4
+dur 30
+add fast 20
+rand
+mes 2 Fast 2 Furious#Tokyo Drift
+
+new 4
+dur 60
+add norm 20
+add immune_red 10
+add heavy 10
+add fast 10
+add stealth 8
+rand
+mes Why won't#you die?
+
+new 5
+dur 60
+add norm 30
+add immune_red 13
+add heavy 13
+add fast 13
+add stealth 10
+rand
+mes Start praying
