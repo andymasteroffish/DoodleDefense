@@ -1,3 +1,9 @@
+/***********************
+ * Andy Wallace        *
+ * copyright 2012      *
+ ***********************/
+
+
 #pragma once
 
 #include "ofMain.h"
