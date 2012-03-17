@@ -29,6 +29,7 @@
 #include "BombAnimation.h"
 
 #include "Wave.h"
+#include "Calibration.h"
 
 class testApp : public ofBaseApp{
     
@@ -167,7 +168,7 @@ public:
     bool tooMuchInk;    //pauses the game when the player has used more ink than they have
     bool depthPause;    //player in frnt of the screen
     bool showGame;      //shows the game
-    bool debugShowGame; //shows the game or not regardless of what kinect sees
+    bool gameStarted;   //the kinect must have taken at least one image to play the game
     bool debugShowKinectVideo;   //take video with the kinect all of the time, not just when taking a picture
     
     bool fastForward;
@@ -215,6 +216,9 @@ public:
     bool waveComplete;
     float waveAnimationTime;
     float waveAnimationStart;
+    
+    //calibrating the game
+    Calibration calibration;
     
     
     //fonts

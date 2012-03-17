@@ -8,7 +8,7 @@
 //--------------------------------------------------------------
 void testApp::setup(){
     ofSetFrameRate(60);
-    ofBackground(150);
+    ofBackground(255);
     
     fieldW=160;
     fieldH=120;
@@ -43,7 +43,7 @@ void testApp::setup(){
     panel.addSlider("proj X ", "PROJX", 0, 0, 2700, true);
     panel.addSlider("proj Y ", "PROJY", 0, 0, 900, true);
     panel.addSlider("proj scale ", "PROJSCALE", 1, 0.2, 3, false);
-    panel.addSlider("max background diff ", "MAXBGDIFF", 6, 0, 2000, true);
+    panel.addSlider("max background diff ", "MAXBGDIFF", 6, 0, 4000, true); //max should be 2000
     
     //temporary values for getting HUD elements right
      panel.addSlider("HUD X", "HUDX", 0, -1500, 1500, true);
@@ -68,7 +68,7 @@ void testApp::setup(){
     panel.addSlider("red", "RVAL", 1.5, 0, 6, false);
     panel.addSlider("green", "GVAL", 2, 0, 6, false);
     panel.addSlider("blue", "BVAL",  2, 0, 6, false);
-    panel.addSlider("inkRefund", "INKREFUND",  150, 0, 300, true);
+    panel.addSlider("inkRefund", "INKREFUND",  150, 0, 3000, true);
     
     
     panel.addPanel("color values", 1, false);
@@ -166,7 +166,7 @@ void testApp::setup(){
     //testing 
     showRect=false;
     showGame=false;
-    debugShowGame=false;
+    gameStarted=false;
     debugShowKinectVideo=true;
     
     //set up the images
@@ -204,11 +204,29 @@ void testApp::setup(){
     goalY[1]=fieldH*fieldScale-10;
     
     
+    //setup calibration with pointers to everything it needs
+    calibration.panel= &panel;
+    calibration.colorImg = &colorImg;
+    calibration.colorImgMedium = &colorImgMedium;
+    calibration.colorImgs[0] = &colorImgs[0];
+    calibration.colorImgs[1] = &colorImgs[1];
+    calibration.colorImgs[2] = &colorImgs[2];
+    calibration.hueImg = &hueImg;
+    calibration.satImg = &satImg;
+    calibration.briImg = &briImg;
+    calibration.wallImg = &wallImage;
+    calibration.depthImgSmall = &depthImgSmall;
+    calibration.depthBackground = &depthBackground;
+    calibration.depthBackgroundDiff = &depthBackgroundDiff;
+    calibration.saveDepthBackground = &saveDepthBackground;
+    calibration.depthPause = &depthPause;
+    calibration.setup();
+    
     
     reset();
     convertDrawingToGame();
     
-    int skipTo=0;
+    int skipTo=8;
     totalInk=getInkFromWaves(skipTo);
     curWave=skipTo;
     //numEntrances=2;
@@ -313,6 +331,16 @@ void testApp::reset(){
 
 //--------------------------------------------------------------
 void testApp::update(){
+    calibration.update();
+    
+    //wall image needs updating if that is being set
+    if (calibration.phase=="Ink"){
+        wallImage=blackImg;
+        wallPixels=wallImage.getPixels();
+        thickenWallImage();
+        setMazeBorders();
+    }
+    
     //update the panel
     panel.update();
     //color tracking
@@ -364,7 +392,7 @@ void testApp::update(){
     updateKinect(); //check on all of the Kinect info
     
     //check if there is any reason to pause the game
-    if (playerPause || noPath || tooMuchInk || depthPause || !showGame || !debugShowGame || waveComplete || takePictureTimer>=0)
+    if (playerPause || noPath || tooMuchInk || depthPause || !showGame || !gameStarted || waveComplete || takePictureTimer>=0)
         paused=true;
     else
         paused=false;
@@ -514,7 +542,8 @@ void testApp::update(){
     }
     
     //check how much ink has been used
-    inkUsed= -inkRefund;
+    inkUsed= 0;  
+    
     
     //check black pixels
     for (int i=0; i<fieldW*fieldH; i++){
@@ -528,9 +557,13 @@ void testApp::update(){
         if (towers[i]->type=="blue") inkUsed+=bInkValue*towers[i]->size;
     }
     
+    //let calibration know how much was used
+    calibration.inkUsedBeforeRefund=inkUsed;
+    
+    //factor in the refund
+    inkUsed-=inkRefund;
     //make sure ink used is not negative
     inkUsed=MAX(0,inkUsed);
-    
     
     //check if they used more ink than they have
     if (inkUsed>totalInk){
@@ -652,16 +685,17 @@ void testApp::updateKinect(){
 
 //--------------------------------------------------------------
 void testApp::draw(){
-    ofBackground(255);
-    
     drawKinectData();
+    
+    //draw the calibration screen
+    calibration.draw();
     
     ofEnableAlphaBlending();
     
     ofPushMatrix();
     ofTranslate(projX, projY);
     ofScale(projScale, projScale);
-    if (showGame && debugShowGame)
+    if (showGame)
         drawGame();
     if (!showRect)
         drawPlayerInfo();   //show player stats that live outside of the game area
@@ -684,6 +718,9 @@ void testApp::draw(){
         screenGrab.saveImage("pics/board"+date+".png");
         
     }
+    
+    
+    
     ofSetLineWidth(1);
     panel.draw();
     
@@ -691,6 +728,7 @@ void testApp::draw(){
 
 //--------------------------------------------------------------
 void testApp::drawKinectData() {
+    
 	
     ofSetColor(255, 255, 255);
 	colorImg.draw(0,0);    //full color kinect picture
@@ -758,7 +796,7 @@ void testApp::drawKinectData() {
                         "\ntoo much ink: "+ofToString(tooMuchInk)+
                         "\nwaveComplete: "+ofToString(waveComplete)+
                         "\nshow game   : "+ofToString(showGame)+
-                        "\ndebug s game: "+ofToString(debugShowGame)+
+                        "\ngame started: "+ofToString(gameStarted)+
                         "\n\npicture timer: "+ofToString(takePictureTimer)+
                         "\n\nshow kinect vide: "+ofToString(debugShowKinectVideo);
     if (paused)ofSetColor(255,0,0);
@@ -787,6 +825,8 @@ void testApp::drawKinectData() {
     ofSetColor(255);
 //    warpGrayImg.draw(0,0);
 //    warpFinder.draw();
+    
+    
     
 }
 
@@ -1009,6 +1049,8 @@ void testApp::exit() {
 
 //--------------------------------------------------------------
 void testApp::keyPressed(int key){
+    calibration.keyPressed(key);
+    
     int xAdjust=kinect.width/2+fieldW*4;//kinect.width;   //for finding the colors
     int yAdjust=kinect.height;
     switch (key){
@@ -1026,7 +1068,7 @@ void testApp::keyPressed(int key){
             
         case ' ':
             takePictureTimer=takePictureTime;
-            debugShowGame= true;        //return to the game
+            gameStarted= true;        //return to the game
             break;
             
         case '/':
@@ -1107,10 +1149,6 @@ void testApp::keyPressed(int key){
             showRect= !showRect;
             break;
             
-        case 'x':
-            debugShowGame= !debugShowGame;
-            break;
-            
         //reset game on enter
         case 13:
             reset();
@@ -1130,31 +1168,30 @@ void testApp::keyPressed(int key){
 
 //--------------------------------------------------------------
 void testApp::keyReleased(int key){
-    
+    calibration.keyReleased(key);
 }
 
 //--------------------------------------------------------------
 void testApp::mouseMoved(int x, int y ){
-    
+    calibration.mouseMoved(x, y);
 }
 
 //--------------------------------------------------------------
 void testApp::mouseDragged(int x, int y, int button){
+    calibration.mouseDragged(x, y, button);
     panel.mouseDragged(x,y,button);
-    
 }
 
 //--------------------------------------------------------------
 void testApp::mousePressed(int x, int y, int button){
+    calibration.mousePressed(x, y, button);
     panel.mousePressed(x,y,button);
-    
 }
 
 //--------------------------------------------------------------
 void testApp::mouseReleased(int x, int y, int button){
+    calibration.mouseReleased(x, y, button);
     panel.mouseReleased();
-   
-    
 }
 
 //--------------------------------------------------------------
@@ -1245,11 +1282,13 @@ void testApp::setMazeBorders(){
 
 //--------------------------------------------------------------
 void testApp::convertDrawingToGame(){ 
+    //get the walls
     wallImage=blackImg;
     wallPixels=wallImage.getPixels();
     thickenWallImage();
     setMazeBorders();
     
+    //pathfinding for the foes
     if (foes.size()>0){
         for (int i=foes.size()-1; i>=0; i--){
             //it would be way better to check each foe's current locaiton against the path made by tempFoe, but it just isn't fucking working.

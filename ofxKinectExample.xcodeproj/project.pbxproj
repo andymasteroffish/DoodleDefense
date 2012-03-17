@@ -17,6 +17,7 @@
 		0A0B98631485F95F001D8405 /* tinyxmlerror.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0A0B985D1485F95F001D8405 /* tinyxmlerror.cpp */; };
 		0A0B98641485F95F001D8405 /* tinyxmlparser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0A0B985E1485F95F001D8405 /* tinyxmlparser.cpp */; };
 		0A0B98651485F95F001D8405 /* ofxXmlSettings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0A0B98601485F95F001D8405 /* ofxXmlSettings.cpp */; };
+		0A9A34A01513D73D00FF4259 /* Calibration.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0A9A349F1513D73D00FF4259 /* Calibration.cpp */; };
 		0AA463FA149A6467007A570D /* BombAnimation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA463F9149A6467007A570D /* BombAnimation.cpp */; };
 		0AB78C6A149132C8003777E8 /* BombTower.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AB78C55149132C8003777E8 /* BombTower.cpp */; };
 		0AB78C6B149132C8003777E8 /* FastFoe.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AB78C57149132C8003777E8 /* FastFoe.cpp */; };
@@ -135,6 +136,8 @@
 		0A0B985E1485F95F001D8405 /* tinyxmlparser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tinyxmlparser.cpp; sourceTree = "<group>"; };
 		0A0B98601485F95F001D8405 /* ofxXmlSettings.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxXmlSettings.cpp; sourceTree = "<group>"; };
 		0A0B98611485F95F001D8405 /* ofxXmlSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxXmlSettings.h; sourceTree = "<group>"; };
+		0A9A349E1513D72C00FF4259 /* Calibration.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Calibration.h; sourceTree = "<group>"; };
+		0A9A349F1513D73D00FF4259 /* Calibration.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Calibration.cpp; sourceTree = "<group>"; };
 		0AA463F8149A645F007A570D /* BombAnimation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BombAnimation.h; sourceTree = "<group>"; };
 		0AA463F9149A6467007A570D /* BombAnimation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BombAnimation.cpp; sourceTree = "<group>"; };
 		0AB78C55149132C8003777E8 /* BombTower.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BombTower.cpp; sourceTree = "<group>"; };
@@ -871,6 +874,8 @@
 				E4B69E1E0A3A1BDC003C02F2 /* testApp.cpp */,
 				0A0543421493DE03007340AC /* Wave.h */,
 				0A0543431493DE0F007340AC /* Wave.cpp */,
+				0A9A349E1513D72C00FF4259 /* Calibration.h */,
+				0A9A349F1513D73D00FF4259 /* Calibration.cpp */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -1007,6 +1012,7 @@
 				0A0543B7149480E1007340AC /* ImmuneBlueFoe.cpp in Sources */,
 				0A0543BA1494827E007340AC /* HeavyFoe.cpp in Sources */,
 				0AA463FA149A6467007A570D /* BombAnimation.cpp in Sources */,
+				0A9A34A01513D73D00FF4259 /* Calibration.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
