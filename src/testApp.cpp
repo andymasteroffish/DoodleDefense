@@ -246,7 +246,7 @@ void testApp::setup(){
     reset();
     convertDrawingToGame();
     
-    int skipTo=8;
+    int skipTo=0;
     totalInk=getInkFromWaves(skipTo);
     curWave=skipTo;
     //numEntrances=2;
