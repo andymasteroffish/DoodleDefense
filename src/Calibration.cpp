@@ -28,41 +28,54 @@ void Calibration::setup(){
     tabLabels[4]="Game";
     tabLabels[5]="Kinect";
     
+    //next button
+    nextButtonX=1200;
+    nextButtonY=750;
+    nextButtonPic.loadImage("calibration/nextButton.png");
+    
+    //font
+    font.loadFont("Helvetica.dfont", 15);
+    
+    //backgorunds
+    locationBackground.loadImage("calibration/locationBackground.png");
+    screenBackground.loadImage("calibration/screenBackground.png");
+    colorsBackground.loadImage("calibration/colorsBackground.png");
+    inkBackground.loadImage("calibration/inkBackground.png");
     
     //------------
     //location phase
     xPosMin=0;
     xPosMax=2700;
     xPos=panel->getValueF("PROJX");
-    xPosSliderMinX=50;
-    xPosSliderMaxX=800;
+    xPosSliderMinX=200;
+    xPosSliderMaxX=850;
     xPosSliderX=ofMap(xPos,xPosMin,xPosMax,xPosSliderMinX,xPosSliderMaxX);
-    xPosSliderY=200;
+    xPosSliderY=800;
     draggingXPosSlider=false;
     
     yPosMin=0;
     yPosMax=900;
     yPos=panel->getValueF("PROJY");
-    yPosSliderMinY=200;
-    yPosSliderMaxY=800;
-    yPosSliderX=900;
+    yPosSliderMinY=500;
+    yPosSliderMaxY=900;
+    yPosSliderX=100;
     yPosSliderY=ofMap(yPos,yPosMin,yPosMax,yPosSliderMinY,yPosSliderMaxY);
     draggingYPosSlider=false;
     
     scaleMin=0.2;
     scaleMax=3;
     scaleVal=panel->getValueF("PROJSCALE");
-    scaleSliderMinX=50;
-    scaleSliderMaxX=800;
+    scaleSliderMinX=200;
+    scaleSliderMaxX=850;
     scaleSliderX=ofMap(scaleVal,scaleMin,scaleMax, scaleSliderMinX, scaleSliderMaxX);
-    scaleSliderY=300;
+    scaleSliderY=900;
     draggingScaleSlider=false;
     
     
     //------------
     //warp points phase
     kinectImageOffsetX=50;
-    kinectImageOffsetY=150;
+    kinectImageOffsetY=300;
     warpPointHandleSize=10;
     for (int i=0; i<4; i++)
         draggingWarpPoint[i]=false;
@@ -71,11 +84,11 @@ void Calibration::setup(){
     //------------
     //color setting phase
     colorImageOffsetX=50;
-    colorImageOffsetY=100;
+    colorImageOffsetY=150;
     colorImagesSpacingY=15;
     //sliders
     colorSliderMinX=750;
-    colorSliderMaxX=1100;
+    colorSliderMaxX=1000;
     
     float spaceBetweenSlidersY=colorImgMedium->height/4;
     for (int i=0; i<3; i++){
@@ -106,15 +119,19 @@ void Calibration::setup(){
     
     //------------
     //ink phase
-    blackThreshSliderY=270;
-    blackThreshSliderMinX=500;
-    blackThreshSliderMaxX=1000;
+    blackThreshSliderY=470;
+    blackThreshSliderMinX=700;
+    blackThreshSliderMaxX=1200;
     blackThreshSliderX=ofMap(panel->getValueI("BTHRESHOLD"), 0, 255, blackThreshSliderMinX, blackThreshSliderMaxX);
     draggingblackThreshSlider=false;
-    inkRefundButton.set(100, 700, 300, 150);
+    inkRefundButton.set(200, 700, 300, 150);
     inkUsedBeforeRefund=0;
     extraRefund=10; //just some extar inbk for the refund
     
+    
+    //------------
+    //game phase
+    startGameButton.set(100,150,600,100);
     
     //------------
     //kinect phase
@@ -130,6 +147,7 @@ void Calibration::setup(){
 
 //------------------------------------------------------
 void Calibration::update(){
+    *showRect =false;
     
     //------------
     //location phase
@@ -146,12 +164,20 @@ void Calibration::update(){
     //------------
     //warp points phase
     if (phase=="Screen"){
+        *showRect =true; //show the guideing rectangle
         //set the warp points based on the current values in the panel
         warpPoints[0].set(panel->getValueF("TL_X")+kinectImageOffsetX,panel->getValueF("TL_Y")+kinectImageOffsetY);
         warpPoints[1].set(panel->getValueF("TR_X")+kinectImageOffsetX,panel->getValueF("TR_Y")+kinectImageOffsetY);
         warpPoints[2].set(panel->getValueF("BR_X")+kinectImageOffsetX,panel->getValueF("BR_Y")+kinectImageOffsetY);
         warpPoints[3].set(panel->getValueF("BL_X")+kinectImageOffsetX,panel->getValueF("BL_Y")+kinectImageOffsetY);
     }
+    
+    //don't show the game during the color pashe
+    if (phase=="Colors")
+        showGame=false;
+    else
+        showGame=true;
+    
 }
 
 //------------------------------------------------------
@@ -161,33 +187,16 @@ void Calibration::draw(){
     ofFill();
     ofRect(0,0,ofGetScreenWidth(),ofGetScreenHeight());
     
-    //draw the tabs at the top
-    //put a grey bar behind everything
-    ofSetColor(100);
-    ofRect(0,0,ofGetScreenWidth(), tabStartY+tabH);
-    for (int i=0; i<6; i++){
-        cout<<"yo"<<endl;
-        ofSetColor(50);    //grey for the tabs
-        //if this is the tab we're on color it black
-        if (phase== tabLabels[i])   ofSetColor(0);
-        
-        ofFill();
-        ofRect(tabStartX+tabW*i,tabStartY,tabW,tabH);
-        
-        //draw a rectangle around it and put the title in it
-        ofNoFill();
-        ofSetColor(0);
-        ofRect(tabStartX+tabW*i,tabStartY,tabW,tabH);
-        ofSetColor(255);
-        ofDrawBitmapString(tabLabels[i], tabStartX+tabW*i+20,tabStartY+35);
-    }
-    
     
     //------------
     //location phase
     if (phase=="Location"){
         ofNoFill();
         ofSetColor(255);
+        
+        //draw the background
+        locationBackground.draw(0,0);
+        
         //draw the sliders
         ofCircle(xPosSliderX,xPosSliderY,sliderSize);
         ofCircle(yPosSliderX,yPosSliderY,sliderSize);
@@ -200,15 +209,18 @@ void Calibration::draw(){
         
         //label the lines
         float textOffsetY=sliderSize+10;
-        ofDrawBitmapString("X position of projection", xPosSliderMinX, xPosSliderY-textOffsetY);
-        ofDrawBitmapString("Y position of projection", yPosSliderX+textOffsetY, yPosSliderMinY);
-        ofDrawBitmapString("scale of projection", scaleSliderMinX, scaleSliderY-textOffsetY);
+        font.drawString("X position of projection", xPosSliderMinX, xPosSliderY-textOffsetY);
+        font.drawString("Y position of projection", yPosSliderX-70, yPosSliderMinY-20);
+        font.drawString("scale of projection", scaleSliderMinX, scaleSliderY-textOffsetY);
     }
     
     
     //------------
     //warp points phase
     if (phase=="Screen"){
+        //background
+        ofSetColor(255);
+        screenBackground.draw(0,0);
         
         //draw the image coming in from the kinect
         ofSetColor(255);
@@ -230,14 +242,18 @@ void Calibration::draw(){
         
         //and draw the output image
         ofSetColor(255);
-        colorImgMedium->draw(800,600);
+        colorImgMedium->draw(700,kinectImageOffsetY+colorImgMedium->height);
+        
+        
     }
     
     
     //---------------------
     //color setting phase
     if (phase=="Colors"){
+        //background
         ofSetColor(255);
+        colorsBackground.draw(0,0);
         
         //draw the color images
         for (int i=0; i<3; i++){
@@ -281,8 +297,12 @@ void Calibration::draw(){
     //------------
     //ink phase
     if (phase=="Ink"){
+        //background
+        ofSetColor(255);
+        inkBackground.draw(0,0);
+        
         //show the wall image for figuring out the black threshold
-        int blackImgX=100;
+        int blackImgX=200;
         int blackImgY=200;
         float imageScale=2;
         ofSetColor(255);
@@ -299,15 +319,87 @@ void Calibration::draw(){
         
         //ink refund
         ofRect(inkRefundButton.x, inkRefundButton.y, inkRefundButton.width, inkRefundButton.height);
-        ofDrawBitmapString("Click here to 0 ink levels", inkRefundButton.x+40, inkRefundButton.y+60);
+        font.drawString("Click here to\n0 ink levels", inkRefundButton.x+50, inkRefundButton.y+60);
         //write out what is used
         int displayValue=inkUsedBeforeRefund - panel->getValueI("INKREFUND") + extraRefund;
         //draw the text green if it is in a good range, otherwise red
         ofSetColor(100, 255, 100);
-        if (abs(displayValue)>15)   ofSetColor(255, 100, 100);
-        ofDrawBitmapString("Current ink level: "+ofToString(displayValue), 100, inkRefundButton.y-50);
+        if (abs(displayValue)>30)   ofSetColor(255, 100, 100);
+        font.drawString("Current ink level: "+ofToString(displayValue), 200, inkRefundButton.y-50);
     }
     
+    //------------
+    //kinect phase
+    if (phase=="Game"){
+        //draw the color images
+        float xOffset=800;
+        float yStart=150;
+        for (int i=0; i<3; i++){
+            float drawY=yStart + (colorImagesSpacingY+colorImgs[i]->height)*i;
+            
+            if (i==0)   ofSetColor(255,0,0);
+            if (i==1)   ofSetColor(0, 255, 0);
+            if (i==2)   ofSetColor(0,0,255);
+            
+            colorImgs[i]->draw(xOffset, drawY);
+            
+            //rectangle to seperate them
+            ofSetLineWidth(3);
+            ofNoFill();
+            ofRect(xOffset,drawY, colorImgs[i]->width,colorImgs[i]->height);
+        }
+        
+         ofSetColor(255);
+        //some text about the color images
+        string colorText="These are the color images the Kinect sees.";
+        colorText+="\nIf they are not seeing the\ncolors drawn on screen";
+        colorText+="\nor they are catching\nthings not in that color,";
+        colorText+="\ncheck the Colors tab.";
+        font.drawString(colorText, xOffset+colorImgs[0]->width+20, yStart+200);
+        
+        //start game button
+        if (*gameStarted==false){
+            font.drawString("Erase the board and click here to start the game!", startGameButton.x+20,startGameButton.y+50);
+            ofNoFill();
+            ofRect(startGameButton.x, startGameButton.y, startGameButton.width, startGameButton.height);
+        }
+        
+        //write why the game might be paused if it is
+        string pauseInfo="";
+        if (*paused){
+            pauseInfo+="The game is paused because...";
+            
+            cout<<*gameStarted<<endl;
+            //go through each reason
+            if (! *gameStarted)
+                pauseInfo+="\nYou haven't started the game.";
+            if (*playerPause)
+                pauseInfo+="\nYou paused it.";
+            if (*noPath)
+                pauseInfo+="\nThere is no path for the foes.\n    (If that seems wrong, check the ink tab)";
+            if (*tooMuchInk)
+                pauseInfo+="\nThe player went over their ink limit.\n    (If that seems wrong, check the ink tab)";
+            if (*depthPause)
+                pauseInfo+="\nThe Kinect senses somebody in front of the game.\n    (If that seems wrong, check the Kinect tab)";
+            
+        }
+        else{
+            pauseInfo="The game is playing";
+        }
+        //write it
+        font.drawString(pauseInfo,100,300);
+        
+        //other info
+        string otherInfo="If the game is not pausing when the player is drawing,\ncheck the Kinect tab.\n\n";
+        otherInfo+="Press P to pause the game.\n";
+        otherInfo+="Press F to fast forward.\n";
+        otherInfo+="Press ENTER to reset the game.\n";
+        otherInfo+="Press SPACE to take a new image of the board.\n";
+        otherInfo+="Press UP or DOWN to adjust Kinect angle.";
+        font.drawString(otherInfo, 100, 700);
+        
+        
+    }
     
     //------------
     //kinect phase
@@ -367,6 +459,34 @@ void Calibration::draw(){
         ofCircle(depthSliderX, depthSliderY, sliderSize);
         
     }
+    
+    //draw the tabs at the top
+    //put a grey bar behind everything
+    ofSetColor(100);
+    ofFill();
+    ofSetLineWidth(1);
+    ofRect(0,0,ofGetScreenWidth(), tabStartY+tabH);
+    for (int i=0; i<6; i++){
+        ofSetColor(50);    //grey for the tabs
+        //if this is the tab we're on color it black
+        if (phase== tabLabels[i])   ofSetColor(0);
+        
+        ofFill();
+        ofRect(tabStartX+tabW*i,tabStartY,tabW,tabH);
+        
+        //draw a rectangle around it and put the title in it
+        ofNoFill();
+        ofSetColor(0);
+        ofRect(tabStartX+tabW*i,tabStartY,tabW,tabH);
+        ofSetColor(255);
+        ofDrawBitmapString(tabLabels[i], tabStartX+tabW*i+20,tabStartY+35);
+    }
+    
+    //draw the next button if this tab includes it
+    if (phase=="Location" || phase=="Screen" || phase=="Colors" || phase=="Ink"){
+        nextButtonPic.draw(nextButtonX,nextButtonY);
+    }
+    
 }
 
 //------------------------------------------------------
@@ -514,8 +634,6 @@ void Calibration::mousePressed(int x, int y, int button){
     if (y>tabStartY && y<tabStartY+tabH && x>tabStartX && x<tabStartX+tabW*6){
         int tabNum= floor((x-tabStartX)/tabW);
         phase=tabLabels[tabNum];
-        //save the data
-        panel->saveSettings();
     }
     
     //------------
@@ -590,6 +708,14 @@ void Calibration::mousePressed(int x, int y, int button){
     }
     
     //-------------
+    //game phase
+    if (phase=="Game"){
+        //check if the user clicked on save backgorund button
+        if (startGameButton.inside(x, y))
+            *gameStarted = true;
+    }
+    
+    //-------------
     //kinect phase
     if (phase=="Kinect"){
         //check if the user clicked on save backgorund button
@@ -599,6 +725,20 @@ void Calibration::mousePressed(int x, int y, int button){
         if (ofDist(x,y,depthSliderX,depthSliderY),sliderSize)   draggingDepthSlider=true;
     }
     
+    
+    //check if the next button was clicked
+    if (x>nextButtonX && x<nextButtonX+nextButtonPic.width && y>nextButtonY && y<nextButtonY+nextButtonPic.height){
+        //not every phase does something, but the ones that do should advance it
+        if (phase=="Location")
+            phase="Screen";
+        else if (phase=="Screen")
+            phase="Colors";
+        else if (phase=="Colors")
+            phase="Ink";
+        else if (phase=="Ink")
+            phase="Game";
+        
+    }
     
 }
 
@@ -628,6 +768,9 @@ void Calibration::mouseReleased(int x, int y, int button){
     
     //kinect phase
     draggingDepthSlider=false;
+    
+    //save the data
+    panel->saveSettings();
 }
 
 

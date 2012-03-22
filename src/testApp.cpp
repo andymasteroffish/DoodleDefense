@@ -25,6 +25,16 @@ void testApp::setup(){
     
     fastForward=false;
     
+    //taking an image of the board
+    takePictureTime    = 20;
+    takePictureDelay    = 25;
+    
+    //ink values
+    blackInkValue   = 0.2;
+    rInkValue       = 2.5;
+    gInkValue       = 3.5;
+    bInkValue       = 3.0;
+    
     //panel
     panel.setup("cv settings", 1300, 0, 300, 700);
 	panel.addPanel("control", 1, false);
@@ -36,9 +46,6 @@ void testApp::setup(){
 	
 	panel.addSlider("black threshold ", "BTHRESHOLD", 100, 0, 255, true);
     panel.addSlider("max compacntess ", "MAXCOMPACT", 1.5, 1, 3, false);
-    
-    panel.addSlider("picture delay ", "PICTUREDELAY", 15, 0, 100, true);
-    panel.addSlider("picture time ", "PICTURETIME", 15, 0, 100, true);
     
     panel.addSlider("proj X ", "PROJX", 0, 0, 2700, true);
     panel.addSlider("proj Y ", "PROJY", 0, 0, 900, true);
@@ -64,10 +71,6 @@ void testApp::setup(){
     panel.addPanel("ink values", 1, false);
     panel.setWhichPanel("ink values");
 	panel.setWhichColumn(0);
-    panel.addSlider("black", "BLACKVAL", 0.15, 0, 2, false);
-    panel.addSlider("red", "RVAL", 1.5, 0, 6, false);
-    panel.addSlider("green", "GVAL", 2, 0, 6, false);
-    panel.addSlider("blue", "BVAL",  2, 0, 6, false);
     panel.addSlider("inkRefund", "INKREFUND",  150, 0, 3000, true);
     
     
@@ -206,6 +209,7 @@ void testApp::setup(){
     
     //setup calibration with pointers to everything it needs
     calibration.panel= &panel;
+    calibration.showRect= &showRect;
     calibration.colorImg = &colorImg;
     calibration.colorImgMedium = &colorImgMedium;
     calibration.colorImgs[0] = &colorImgs[0];
@@ -219,7 +223,14 @@ void testApp::setup(){
     calibration.depthBackground = &depthBackground;
     calibration.depthBackgroundDiff = &depthBackgroundDiff;
     calibration.saveDepthBackground = &saveDepthBackground;
+    //reasons the game might be paused
+    calibration.paused = &paused;
+    calibration.playerPause= &playerPause;
+    calibration.noPath = &noPath;
+    calibration.tooMuchInk = &tooMuchInk;
     calibration.depthPause = &depthPause;
+    calibration.gameStarted= &gameStarted;
+    calibration.debugShowKinectVideo = &debugShowKinectVideo;
     calibration.setup();
     
     
@@ -361,8 +372,7 @@ void testApp::update(){
     projY			= panel.getValueF("PROJY");
     projScale		= panel.getValueF("PROJSCALE");
     maxDepthDiff    = panel.getValueI("MAXBGDIFF");
-    takePictureTime    = panel.getValueI("PICTURETIME");
-     takePictureDelay    = panel.getValueI("PICTUREDELAY");
+
     //warp points
     warpPoints[0].x = panel.getValueI("TL_X");
     warpPoints[0].y = panel.getValueI("TL_Y");
@@ -373,10 +383,6 @@ void testApp::update(){
     warpPoints[3].x = panel.getValueI("BL_X");
     warpPoints[3].y = panel.getValueI("BL_Y");
     //ink values
-    blackInkValue   =panel.getValueF("BLACKVAL");
-    rInkValue       =panel.getValueF("RVAL");
-    gInkValue       =panel.getValueF("GVAL");
-    bInkValue       =panel.getValueF("BVAL");
     inkRefund       =panel.getValueI("INKREFUND");
     //color trakcing vals
     hue[0]  =   panel.getValueI("RH");
@@ -392,7 +398,7 @@ void testApp::update(){
     updateKinect(); //check on all of the Kinect info
     
     //check if there is any reason to pause the game
-    if (playerPause || noPath || tooMuchInk || depthPause || !showGame || !gameStarted || waveComplete || takePictureTimer>=0)
+    if (playerPause || noPath || tooMuchInk || depthPause || !showGame || !gameStarted || waveComplete || takePictureTimer>=0 || calibration.phase!="Game")
         paused=true;
     else
         paused=false;
@@ -695,7 +701,7 @@ void testApp::draw(){
     ofPushMatrix();
     ofTranslate(projX, projY);
     ofScale(projScale, projScale);
-    if (showGame)
+    if (showGame && calibration.showGame)
         drawGame();
     if (!showRect)
         drawPlayerInfo();   //show player stats that live outside of the game area
@@ -775,8 +781,7 @@ void testApp::drawKinectData() {
     
     //planning rect
     if (showRect){
-        //ofSetColor(222,69,204);
-        ofSetColor(0);
+        ofSetColor(50,255,50);
         ofFill();
         ofPushMatrix();
         ofTranslate(projX,projY);
@@ -1061,9 +1066,7 @@ void testApp::keyPressed(int key){
             
             //pause
         case 'p':
-            //DON'T NEED THIS IF STATEMENT
-            if (!noPath && !tooMuchInk) //no unpausing if there are things preventing the game from being played
-                playerPause=!playerPause;
+            playerPause=!playerPause;
             break;
             
         case ' ':
@@ -1071,9 +1074,9 @@ void testApp::keyPressed(int key){
             gameStarted= true;        //return to the game
             break;
             
-        case '/':
-            saveDepthBackground=true;
-            break;
+//        case '/':
+//            saveDepthBackground=true;
+//            break;
 
             
             //KINECT TWEAKS
@@ -1089,74 +1092,50 @@ void testApp::keyPressed(int key){
 			kinect.setCameraTiltAngle(angle);
 			break;
             
-        case 'w':
-            //set the next warpPoint
-            if (curWarpPoint==0){
-                panel.setValueF("TL_X", mouseX);
-                panel.setValueF("TL_Y", mouseY);
-            }
-            if (curWarpPoint==1){
-                panel.setValueF("TR_X", mouseX);
-                panel.setValueF("TR_Y", mouseY);
-            }
-            if (curWarpPoint==2){
-                panel.setValueF("BR_X", mouseX);
-                panel.setValueF("BR_Y", mouseY);
-            }
-            if (curWarpPoint==3){
-                panel.setValueF("BL_X", mouseX);
-                panel.setValueF("BL_Y", mouseY);
-            }
-            //warpPoints[curWarpPoint].set(mouseX,mouseY);
-            curWarpPoint= (++curWarpPoint)%4;
-            break;
             
-        case 'r':
-            if (mouseX-xAdjust >= 0 && mouseX-xAdjust < colorImgMedium.width && mouseY-yAdjust >= 0 && mouseY-yAdjust < colorImgMedium.height){
-                int pixel = (mouseY-yAdjust) * colorImgMedium.width + (mouseX-xAdjust);
-                panel.setValueF("RH",hueImg.getPixels()[pixel]);
-                panel.setValueF("RS",satImg.getPixels()[pixel]);
-                panel.setValueF("RV",briImg.getPixels()[pixel]);
-            }
-            break;
-        case 'g':
-            if (mouseX-xAdjust >= 0 && mouseX-xAdjust < colorImgMedium.width && mouseY-yAdjust >= 0 && mouseY-yAdjust < colorImgMedium.height){
-                int pixel = (mouseY-yAdjust) * colorImgMedium.width + (mouseX-xAdjust);
-                panel.setValueF("GH",hueImg.getPixels()[pixel]);
-                panel.setValueF("GS",satImg.getPixels()[pixel]);
-                panel.setValueF("GV",briImg.getPixels()[pixel]);
-            }
-            break;
-        case 'b':
-            if (mouseX-xAdjust >= 0 && mouseX-xAdjust < colorImgMedium.width && mouseY-yAdjust >= 0 && mouseY-yAdjust < colorImgMedium.height){
-                int pixel = (mouseY-yAdjust) * colorImgMedium.width + (mouseX-xAdjust);
-                panel.setValueF("BH",hueImg.getPixels()[pixel]);
-                panel.setValueF("BS",satImg.getPixels()[pixel]);
-                panel.setValueF("BV",briImg.getPixels()[pixel]);
-            }
-            break;
+//        case 'r':
+//            if (mouseX-xAdjust >= 0 && mouseX-xAdjust < colorImgMedium.width && mouseY-yAdjust >= 0 && mouseY-yAdjust < colorImgMedium.height){
+//                int pixel = (mouseY-yAdjust) * colorImgMedium.width + (mouseX-xAdjust);
+//                panel.setValueF("RH",hueImg.getPixels()[pixel]);
+//                panel.setValueF("RS",satImg.getPixels()[pixel]);
+//                panel.setValueF("RV",briImg.getPixels()[pixel]);
+//            }
+//            break;
+//        case 'g':
+//            if (mouseX-xAdjust >= 0 && mouseX-xAdjust < colorImgMedium.width && mouseY-yAdjust >= 0 && mouseY-yAdjust < colorImgMedium.height){
+//                int pixel = (mouseY-yAdjust) * colorImgMedium.width + (mouseX-xAdjust);
+//                panel.setValueF("GH",hueImg.getPixels()[pixel]);
+//                panel.setValueF("GS",satImg.getPixels()[pixel]);
+//                panel.setValueF("GV",briImg.getPixels()[pixel]);
+//            }
+//            break;
+//        case 'b':
+//            if (mouseX-xAdjust >= 0 && mouseX-xAdjust < colorImgMedium.width && mouseY-yAdjust >= 0 && mouseY-yAdjust < colorImgMedium.height){
+//                int pixel = (mouseY-yAdjust) * colorImgMedium.width + (mouseX-xAdjust);
+//                panel.setValueF("BH",hueImg.getPixels()[pixel]);
+//                panel.setValueF("BS",satImg.getPixels()[pixel]);
+//                panel.setValueF("BV",briImg.getPixels()[pixel]);
+//            }
+//            break;
             
         case 'f':
             fastForward=!fastForward;
             break;
             
         //toogle showing the kinect video on screen all of the time
-        case 'k':
-            debugShowKinectVideo=!debugShowKinectVideo;
-            break;
-            
-        case 'z':
-            showRect= !showRect;
-            break;
+//        case 'k':
+//            debugShowKinectVideo=!debugShowKinectVideo;
+//            break;
+//            
+//        case 'z':
+//            showRect= !showRect;
+//            break;
             
         //reset game on enter
         case 13:
             reset();
             break;
-            
-        case 'c':
-            calibrateWarp();
-            break;
+
             
         case 's':
             savingBoardPicture=true;
@@ -1179,7 +1158,7 @@ void testApp::mouseMoved(int x, int y ){
 //--------------------------------------------------------------
 void testApp::mouseDragged(int x, int y, int button){
     calibration.mouseDragged(x, y, button);
-    panel.mouseDragged(x,y,button);
+    //panel.mouseDragged(x,y,button);
 }
 
 //--------------------------------------------------------------
@@ -1191,7 +1170,7 @@ void testApp::mousePressed(int x, int y, int button){
 //--------------------------------------------------------------
 void testApp::mouseReleased(int x, int y, int button){
     calibration.mouseReleased(x, y, button);
-    panel.mouseReleased();
+    //panel.mouseReleased();
 }
 
 //--------------------------------------------------------------
@@ -1575,87 +1554,6 @@ float testApp::getInkFromWaves(int num){
     
 }
 
-//--------------------------------------------------------------
-//sets the warp points automaticly
-void testApp::calibrateWarp(){
-    //testing the auto-warp points
-    ofxCvContourFinder 	warpFinder;
-    ofxCvGrayscaleImage		warpGrayImg;
-    warpGrayImg.allocate(kinect.width, kinect.height);
-    
-    //find the biggest blob in the color image
-    //this will be the outline of the game
-    
-    
-    warpGrayImg=colorImg;
-    warpGrayImg.threshold(150);
-    
-    warpFinder.findContours(warpGrayImg, 50, kinect.width*kinect.height*0.95, 1, true);
-    
-    
-    //if no blobs were found, just return
-    if (warpFinder.blobs.size()==0) return;
-    
-    //otherwise, get the blob
-    ofPoint topLeft,topRight,bottomLeft,bottomRight;
-    topLeft.set(warpFinder.blobs[0].boundingRect.x, warpFinder.blobs[0].boundingRect.y);
-    topRight.set(warpFinder.blobs[0].boundingRect.x+warpFinder.blobs[0].boundingRect.width, warpFinder.blobs[0].boundingRect.y);
-    bottomLeft.set(warpFinder.blobs[0].boundingRect.x, warpFinder.blobs[0].boundingRect.y+warpFinder.blobs[0].boundingRect.height);
-    bottomRight.set(warpFinder.blobs[0].boundingRect.x+warpFinder.blobs[0].boundingRect.width, warpFinder.blobs[0].boundingRect.y+warpFinder.blobs[0].boundingRect.height);
-    
-    int closeTL=0;
-    float distTL=100000000;
-    int closeTR=0;
-    float distTR=100000000;
-    int closeBL=0;
-    float distBL=100000000;
-    int closeBR=0;
-    float distBR=100000000;
-    
-    for (int i=0; i<warpFinder.blobs[0].pts.size(); i++){
-        ofPoint thisPoint=warpFinder.blobs[0].pts[i];
-        
-        //check top Left
-        if (ofDist(thisPoint.x,thisPoint.y,topLeft.x,topLeft.y)<distTL){
-            distTL=ofDist(thisPoint.x,thisPoint.y,topLeft.x,topLeft.y);
-            closeTL=i;
-        }
-        
-        //check top right
-        if (ofDist(thisPoint.x,thisPoint.y,topRight.x,topRight.y)<distTR){
-            distTR=ofDist(thisPoint.x,thisPoint.y,topRight.x,topRight.y);
-            closeTR=i;
-        }
-        
-        //check bottom Left
-        if (ofDist(thisPoint.x,thisPoint.y,bottomLeft.x,bottomLeft.y)<distBL){
-            distBL=ofDist(thisPoint.x,thisPoint.y,bottomLeft.x,bottomLeft.y);
-            closeBL=i;
-        }
-        
-        //check bottom right
-        if (ofDist(thisPoint.x,thisPoint.y,bottomRight.x,bottomRight.y)<distBR){
-            distBR=ofDist(thisPoint.x,thisPoint.y,bottomRight.x,bottomRight.y);
-            closeBR=i;
-        }
-        
-    }
-    
-    panel.setValueF("TL_X", warpFinder.blobs[0].pts[closeTL].x);
-    panel.setValueF("TL_Y", warpFinder.blobs[0].pts[closeTL].y);
-    
-    panel.setValueF("TR_X", warpFinder.blobs[0].pts[closeTR].x);
-    panel.setValueF("TR_Y", warpFinder.blobs[0].pts[closeTR].y);
-    
-    panel.setValueF("BL_X", warpFinder.blobs[0].pts[closeBL].x);
-    panel.setValueF("BL_Y", warpFinder.blobs[0].pts[closeBL].y);
-    
-    panel.setValueF("BR_X", warpFinder.blobs[0].pts[closeBR].x);
-    panel.setValueF("BR_Y", warpFinder.blobs[0].pts[closeBR].y);
-    
-    showRect=false; //turn the guiding rectngle off
-    
-}
 
 
 

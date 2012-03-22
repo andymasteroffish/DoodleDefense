@@ -71,7 +71,6 @@ public:
     void startNextWave();
     void endWave();
     float getInkFromWaves(int num);    //Returns the total ink value of all enemies up to wave num
-    void calibrateWarp();
     
     //setting up the kinect
     ofxControlPanel	panel;

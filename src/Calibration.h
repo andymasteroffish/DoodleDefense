@@ -44,6 +44,13 @@ public:
     int tabH;   //height of a tab
     string tabLabels[6];    //names of the tabs
     
+    //next button
+    ofImage nextButtonPic;
+    int nextButtonX, nextButtonY;
+    
+    //font
+    ofTrueTypeFont font;
+    
     //---------------------
     //location phase
     int xPosSliderX;
@@ -73,8 +80,11 @@ public:
     float scaleMax;
     float scaleVal;
     
+    ofImage locationBackground;
+    
     //---------------------
-    //warp points phase
+    //screen phase
+    bool * showRect;
     ofxCvColorImage *   colorImg;
     ofxCvColorImage *   colorImgMedium;
     int kinectImageOffsetX;
@@ -83,8 +93,11 @@ public:
     float warpPointHandleSize;
     bool draggingWarpPoint[4];
     
+    ofImage screenBackground;
+    
     //---------------------
     //color setting phase
+    bool showGame;  //don't show the game if we're getting the colors
     ofxCvGrayscaleImage *   colorImgs[3];
     ofxCvGrayscaleImage *	hueImg;
     ofxCvGrayscaleImage	*	satImg;
@@ -105,6 +118,8 @@ public:
     int valSliderY[3];
     bool draggingValSlider[3];
     
+    ofImage colorsBackground;
+    
     //---------------------
     //Ink phase
     //black threshold
@@ -119,10 +134,24 @@ public:
     float extraRefund;  //how much to exceed 0 to make sure that the ink refund is really enough
     ofRectangle inkRefundButton;
     
+    ofImage inkBackground;
+    
+    //---------------------
+    //game phase
+    
+    ofRectangle startGameButton;
+    //all the things that could pause the game
+    bool * paused;        //global pause. If any reason is true, this is true
+    bool * playerPause;   //player pauses the game
+    bool * noPath;        //becomes true if any foe can't reach the end
+    bool * tooMuchInk;    //pauses the game when the player has used more ink than they have
+    bool * depthPause;    //player in frnt of the screen
+    bool * gameStarted;   //the kinect must have taken at least one image to play the game
+    bool * debugShowKinectVideo;   //take video with the kinect all of the time, not just when taking a picture
+    
     //---------------------
     //Kinect Phase
     bool * saveDepthBackground;
-    bool * depthPause;
     ofxCvGrayscaleImage *   depthImgSmall;      
     ofxCvGrayscaleImage *   depthBackground;   
     ofxCvGrayscaleImage *   depthBackgroundDiff;
@@ -135,6 +164,8 @@ public:
     int depthDiffMax;
     int depthDiffMin;
     bool draggingDepthSlider;
+    
+    ofImage kinectBackground;
     
 
     
