@@ -39,7 +39,6 @@ public:
     void update();
     void updateKinect();
     void draw();
-    void drawKinectData();
     void drawGame();
     void drawPlayerInfo();
     void drawWaveCompleteAnimation();
@@ -218,6 +217,7 @@ public:
     
     //calibrating the game
     Calibration calibration;
+    float screenScale;  //shrink the calibration for smaller resolutions
     
     
     //fonts

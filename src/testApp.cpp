@@ -233,6 +233,15 @@ void testApp::setup(){
     calibration.debugShowKinectVideo = &debugShowKinectVideo;
     calibration.setup();
     
+    //set up the scale to display the calibration info if the app would be larger than the screen
+    screenScale=1;  //if the screen is large enough, don't do anything to the scale
+    if (ofGetHeight()>ofGetScreenHeight()){
+        screenScale=((float)ofGetScreenHeight()/(float)ofGetHeight()) *0.98;    //just shrink it slightly more
+    }
+    cout<<"screen H "<<ofGetScreenHeight()<<endl;
+    cout<<"H "<<ofGetHeight()<<endl;
+    cout<<"screen scale "<<screenScale<<endl;
+    
     
     reset();
     convertDrawingToGame();
@@ -691,10 +700,16 @@ void testApp::updateKinect(){
 
 //--------------------------------------------------------------
 void testApp::draw(){
-    drawKinectData();
+    //cover the computer screen for the calibration screen
+    ofSetColor(0);
+    ofFill();
+    ofRect(0,0,ofGetScreenWidth(),ofGetScreenHeight());
     
     //draw the calibration screen
+    ofPushMatrix();
+    ofScale(screenScale,screenScale);
     calibration.draw();
+    ofPopMatrix();
     
     ofEnableAlphaBlending();
     
@@ -728,110 +743,7 @@ void testApp::draw(){
     
     
     ofSetLineWidth(1);
-    panel.draw();
-    
-}
-
-//--------------------------------------------------------------
-void testApp::drawKinectData() {
-    
-	
-    ofSetColor(255, 255, 255);
-	colorImg.draw(0,0);    //full color kinect picture
-    
-    //small color image and its components
-	colorImgMedium.draw(kinect.width, 0, fieldW, fieldH);
-	hueImg.draw(kinect.width, fieldH, fieldW, fieldH);
-	satImg.draw(kinect.width, fieldH*2, fieldW, fieldH);
-	briImg.draw(kinect.width, fieldH*3, fieldW, fieldH);
-	
-    //depth
-	depthImg.draw(0,kinect.height,kinect.width/2, kinect.height/2);
-    depthImgSmall.draw(kinect.width/2,kinect.height, fieldW, fieldH);
-    depthBackground.draw(kinect.width/2+fieldW,kinect.height, fieldW, fieldH);
-    depthBackgroundDiff.draw(kinect.width/2+fieldW*2,kinect.height, fieldW, fieldH);
-    
-    //testing
-    if (depthPause){
-        depthBackgroundDiff.draw(kinect.width/2+fieldW*3,kinect.height, fieldW, fieldH);
-    }
-    
-    //draw the single color images
-    blackImg.draw(kinect.width+fieldW,fieldH*0);
-    for (int i=0; i<3; i++)
-        colorImgs[i].draw(kinect.width+fieldW,fieldH*(1+i), fieldW, fieldH);
-    
-    //the images for walls and towers being used currently
-    wallImage.draw(kinect.width+fieldW*2, 0, fieldW, fieldH);
-    for (int i=0; i<3; i++){
-        colorImgsDisplay[i].draw(kinect.width+fieldW*2, fieldH*(i+1), fieldW, fieldH);
-    }
-    
-    //draw the warped image at its true size
-    colorImgMedium.draw(kinect.width/2+fieldW*4, kinect.height);
-    
-    //draw the warpPoints
-    ofNoFill();
-    ofSetLineWidth(1);
-    ofSetColor(255,0,100);
-    ofBeginShape();
-    for (int i=0; i<4; i++)
-        ofVertex(warpPoints[i].x,warpPoints[i].y);
-    ofEndShape(true);
-    
-    //planning rect
-    if (showRect){
-        ofSetColor(50,255,50);
-        ofFill();
-        ofPushMatrix();
-        ofTranslate(projX,projY);
-        ofScale(projScale,projScale);
-        
-        ofRect(0,0,fieldW*fieldScale,fieldH*fieldScale);
-        
-        ofPopMatrix();
-    }
-    
-    //WRITTEN GAME DATA
-    //write out everything that coule be pausing the game
-    string pauseInfo=     "paused:       "+ofToString(paused)+
-                        "\nplayer pause: "+ofToString(playerPause)+
-                        "\ndepth pause : "+ofToString(depthPause)+
-                        "\nno path     : "+ofToString(noPath)+
-                        "\ntoo much ink: "+ofToString(tooMuchInk)+
-                        "\nwaveComplete: "+ofToString(waveComplete)+
-                        "\nshow game   : "+ofToString(showGame)+
-                        "\ngame started: "+ofToString(gameStarted)+
-                        "\n\npicture timer: "+ofToString(takePictureTimer)+
-                        "\n\nshow kinect vide: "+ofToString(debugShowKinectVideo);
-    if (paused)ofSetColor(255,0,0);
-    else       ofSetColor(0,100,0);
-    ofDrawBitmapString(pauseInfo, 600, 700);
-    
-    //show ink levels and values
-    if (tooMuchInk)ofSetColor(255,0,0);
-    else       ofSetColor(0,100,0);
-    string inkInfo= "Ink Used: "+ofToString(inkUsed)+"\n  out of "+ofToString(totalInk)+
-                    "\n"+
-                    "\nblack val: "+ofToString(blackInkValue)+
-                    "\nred val  : "+ofToString(rInkValue)+
-                    "\ngreen val: "+ofToString(gInkValue)+
-                    "\nblue val : "+ofToString(bInkValue);
-    ofDrawBitmapString(inkInfo, 750,700);
-    
-    //wave info
-    if (!wavesDone) ofSetColor(255,0,0);
-    else            ofSetColor(0,100,0);
-    string waveInfo="Wave: "+ofToString(curWave+1)+"  out of "+ofToString(waves.size())+
-                    "\nFoe #"+ofToString(waves[curWave].nextFoe+1)+"  out of "+ofToString(waves[curWave].foes.size())+
-                    "\nwave time: "+ofToString(waves[curWave].curTime);
-    ofDrawBitmapString(waveInfo,400,700);
-    
-    ofSetColor(255);
-//    warpGrayImg.draw(0,0);
-//    warpFinder.draw();
-    
-    
+    //panel.draw();
     
 }
 
@@ -1152,24 +1064,24 @@ void testApp::keyReleased(int key){
 
 //--------------------------------------------------------------
 void testApp::mouseMoved(int x, int y ){
-    calibration.mouseMoved(x, y);
+    calibration.mouseMoved(x/screenScale, y/screenScale);
 }
 
 //--------------------------------------------------------------
 void testApp::mouseDragged(int x, int y, int button){
-    calibration.mouseDragged(x, y, button);
+    calibration.mouseDragged(x/screenScale, y/screenScale, button);
     //panel.mouseDragged(x,y,button);
 }
 
 //--------------------------------------------------------------
 void testApp::mousePressed(int x, int y, int button){
-    calibration.mousePressed(x, y, button);
-    panel.mousePressed(x,y,button);
+    calibration.mousePressed(x/screenScale, y/screenScale, button);
+    //panel.mousePressed(x,y,button);
 }
 
 //--------------------------------------------------------------
 void testApp::mouseReleased(int x, int y, int button){
-    calibration.mouseReleased(x, y, button);
+    calibration.mouseReleased(x/screenScale, y/screenScale, button);
     //panel.mouseReleased();
 }
 

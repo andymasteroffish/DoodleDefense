@@ -50,6 +50,7 @@ public:
     
     //font
     ofTrueTypeFont font;
+    ofTrueTypeFont fontSmall;
     
     //---------------------
     //location phase

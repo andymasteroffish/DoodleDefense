@@ -35,6 +35,7 @@ void Calibration::setup(){
     
     //font
     font.loadFont("Helvetica.dfont", 15);
+    fontSmall.loadFont("Helvetica.dfont", 11);
     
     //backgorunds
     locationBackground.loadImage("calibration/locationBackground.png");
@@ -182,10 +183,6 @@ void Calibration::update(){
 
 //------------------------------------------------------
 void Calibration::draw(){
-    //cover the computer screen
-    ofSetColor(0);
-    ofFill();
-    ofRect(0,0,ofGetScreenWidth(),ofGetScreenHeight());
     
     
     //------------
@@ -283,11 +280,11 @@ void Calibration::draw(){
             
             //lines for the sliders
             float textOffset=15;
-            ofDrawBitmapString("Hue Range", colorSliderMinX, hueSliderY[i]-textOffset);
+            fontSmall.drawString("Hue Range", colorSliderMinX, hueSliderY[i]-textOffset);
             ofLine(colorSliderMinX, hueSliderY[i], colorSliderMaxX, hueSliderY[i]);
-            ofDrawBitmapString("Saturation Range", colorSliderMinX, satSliderY[i]-textOffset);
+            fontSmall.drawString("Saturation Range", colorSliderMinX, satSliderY[i]-textOffset);
             ofLine(colorSliderMinX, satSliderY[i], colorSliderMaxX, satSliderY[i]);
-            ofDrawBitmapString("Value Range", colorSliderMinX, valSliderY[i]-textOffset);
+            fontSmall.drawString("Value Range", colorSliderMinX, valSliderY[i]-textOffset);
             ofLine(colorSliderMinX, valSliderY[i], colorSliderMaxX, valSliderY[i]);
         }
         
@@ -369,7 +366,6 @@ void Calibration::draw(){
         if (*paused){
             pauseInfo+="The game is paused because...";
             
-            cout<<*gameStarted<<endl;
             //go through each reason
             if (! *gameStarted)
                 pauseInfo+="\nYou haven't started the game.";
@@ -429,30 +425,30 @@ void Calibration::draw(){
         //some descriptions
         ofSetColor(255);
         int textOffsetY=15;
-        ofDrawBitmapString("What the Kinect sees:", imgXStart, imgY-textOffsetY);
-        ofDrawBitmapString("Saved background image:", imgXStart+depthImgSmall->width+imgXSpacing, imgY-textOffsetY);
-        ofDrawBitmapString("Difference between these images:", imgXStart+depthImgSmall->width*2+imgXSpacing*2, imgY-textOffsetY);
+        fontSmall.drawString("What the Kinect sees:", imgXStart, imgY-textOffsetY);
+        fontSmall.drawString("Saved background image:", imgXStart+depthImgSmall->width+imgXSpacing, imgY-textOffsetY);
+        fontSmall.drawString("Difference between these images:", imgXStart+depthImgSmall->width*2+imgXSpacing*2, imgY-textOffsetY);
         
         //print a message about the if the difference image detects anybody
         if (*depthPause){
             ofSetColor(255, 100, 100);
-            ofDrawBitmapString("I detect somebody's arm in front of the white board", imgXStart+depthImgSmall->width*2+imgXSpacing*2, imgY+depthBackgroundDiff->height+textOffsetY);
+            fontSmall.drawString("I detect somebody's arm in front of the white board", imgXStart+depthImgSmall->width*2+imgXSpacing*2, imgY+depthBackgroundDiff->height+textOffsetY);
         }else{
-            ofDrawBitmapString("Nobody in front of the white board", imgXStart+depthImgSmall->width*2+imgXSpacing*2, imgY+depthBackgroundDiff->height+textOffsetY);
+            fontSmall.drawString("Nobody in front of the white board", imgXStart+depthImgSmall->width*2+imgXSpacing*2, imgY+depthBackgroundDiff->height+textOffsetY);
             
         }
         
         //some instructions about the save backgorund button
         ofSetColor(255);
-        ofDrawBitmapString("When nobody is in front of the Kinect, the background image should be the same as the Kinect image.\nThis will happen automaticly after it takes a picture, but if it gets stuck try resetting it.", 100,500);
+        fontSmall.drawString("When nobody is in front of the Kinect, the background image should be the same as the Kinect image.\nThis will happen automaticly after it takes a picture, but if it gets stuck try resetting it.", 100,500);
         //save backgorund button
         ofRect(saveDepthBackgroundButton.x, saveDepthBackgroundButton.y, saveDepthBackgroundButton.width, saveDepthBackgroundButton.height);
-        ofDrawBitmapString("Click Here To\nSave Background Image", saveDepthBackgroundButton.x+20,saveDepthBackgroundButton.y+45);
+        fontSmall.drawString("Click Here To\nSave Background Image", saveDepthBackgroundButton.x+10,saveDepthBackgroundButton.y+45);
         
         //some instructions about the max background diff slider
-        ofDrawBitmapString("If the difference image is not picking up on when somebody is in front of it, or it keeps saying that somebody is in front when they aren't,\ntry adjusting the Kinect sensitivity.\nErr on the side of making it higher, because you don't want it to interpret a random shadow as a hand", 100,700);
+        fontSmall.drawString("If the difference image is not picking up on when somebody is in front of it, or it keeps saying that somebody is in front when they aren't,\ntry adjusting the Kinect sensitivity.\nErr on the side of making it higher, because you don't want it to interpret a random shadow as a hand", 100,700);
         //and the current level
-        ofDrawBitmapString("Current sensitivity: "+ofToString(panel->getValueI("MAXBGDIFF")), depthSliderMinX, depthSliderY-textOffsetY-sliderSize);
+        fontSmall.drawString("Current sensitivity: "+ofToString(panel->getValueI("MAXBGDIFF")), depthSliderMinX, depthSliderY-textOffsetY-sliderSize);
         
         //draw the slider
         ofLine(depthSliderMinX, depthSliderY, depthSliderMaxX, depthSliderY);
@@ -479,7 +475,7 @@ void Calibration::draw(){
         ofSetColor(0);
         ofRect(tabStartX+tabW*i,tabStartY,tabW,tabH);
         ofSetColor(255);
-        ofDrawBitmapString(tabLabels[i], tabStartX+tabW*i+20,tabStartY+35);
+        font.drawString(tabLabels[i], tabStartX+tabW*i+20,tabStartY+35);
     }
     
     //draw the next button if this tab includes it
