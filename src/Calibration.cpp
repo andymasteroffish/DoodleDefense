@@ -121,13 +121,13 @@ void Calibration::setup(){
     //------------
     //ink phase
     blackThreshSliderY=470;
-    blackThreshSliderMinX=700;
+    blackThreshSliderMinX=700;   
     blackThreshSliderMaxX=1200;
-    blackThreshSliderX=ofMap(panel->getValueI("BTHRESHOLD"), 0, 255, blackThreshSliderMinX, blackThreshSliderMaxX);
+    blackThreshSliderX=ofMap(panel->getValueI("BTHRESHOLD"), 255, 0, blackThreshSliderMinX, blackThreshSliderMaxX);
     draggingblackThreshSlider=false;
     inkRefundButton.set(200, 700, 300, 150);
     inkUsedBeforeRefund=0;
-    extraRefund=10; //just some extar inbk for the refund
+    extraRefund=10; //just some extra ink for the refund
     
     
     //------------
@@ -139,7 +139,7 @@ void Calibration::setup(){
     saveDepthBackgroundButton.set(100,550,200,100);
     depthDiffMin=0;
     depthDiffMax=2000;
-    depthSliderMinX=100;
+    depthSliderMinX=100;    
     depthSliderMaxX=850;
     depthSliderY=850;
     depthSliderX=ofMap(panel->getValueI("MAXBGDIFF"), depthDiffMin, depthDiffMax, depthSliderMinX, depthSliderMaxX);
@@ -174,7 +174,7 @@ void Calibration::update(){
     }
     
     //don't show the game during the color pashe
-    if (phase=="Colors")
+    if (phase=="Colors" || phase=="Ink")
         showGame=false;
     else
         showGame=true;
@@ -605,7 +605,7 @@ void Calibration::mouseDragged(int x, int y, int button){
         //move the black threshold slider if the user is dragging it
         if (draggingblackThreshSlider){
             blackThreshSliderX=MAX(blackThreshSliderMinX, MIN(blackThreshSliderMaxX, x));
-            panel->setValueI("BTHRESHOLD", ofMap(x,blackThreshSliderMinX, blackThreshSliderMaxX,0,255) );
+            panel->setValueI("BTHRESHOLD", ofMap(x,blackThreshSliderMinX, blackThreshSliderMaxX,255,0) );
         }
        
     }
@@ -630,6 +630,9 @@ void Calibration::mousePressed(int x, int y, int button){
     if (y>tabStartY && y<tabStartY+tabH && x>tabStartX && x<tabStartX+tabW*6){
         int tabNum= floor((x-tabStartX)/tabW);
         phase=tabLabels[tabNum];
+        
+        //if this puts us in the game phase, snap a picture
+        if (phase=="Game")   *takePictureTimer=2;
     }
     
     //------------
@@ -731,8 +734,10 @@ void Calibration::mousePressed(int x, int y, int button){
             phase="Colors";
         else if (phase=="Colors")
             phase="Ink";
-        else if (phase=="Ink")
+        else if (phase=="Ink"){
             phase="Game";
+            *takePictureTimer=2;    //snap a picture
+        }
         
     }
     

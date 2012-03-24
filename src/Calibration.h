@@ -149,7 +149,7 @@ public:
     bool * depthPause;    //player in frnt of the screen
     bool * gameStarted;   //the kinect must have taken at least one image to play the game
     bool * debugShowKinectVideo;   //take video with the kinect all of the time, not just when taking a picture
-    
+    int * takePictureTimer;
     //---------------------
     //Kinect Phase
     bool * saveDepthBackground;

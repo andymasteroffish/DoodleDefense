@@ -223,6 +223,7 @@ void testApp::setup(){
     calibration.depthBackground = &depthBackground;
     calibration.depthBackgroundDiff = &depthBackgroundDiff;
     calibration.saveDepthBackground = &saveDepthBackground;
+    calibration.takePictureTimer = &takePictureTimer;
     //reasons the game might be paused
     calibration.paused = &paused;
     calibration.playerPause= &playerPause;
@@ -238,9 +239,6 @@ void testApp::setup(){
     if (ofGetHeight()>ofGetScreenHeight()){
         screenScale=((float)ofGetScreenHeight()/(float)ofGetHeight()) *0.98;    //just shrink it slightly more
     }
-    cout<<"screen H "<<ofGetScreenHeight()<<endl;
-    cout<<"H "<<ofGetHeight()<<endl;
-    cout<<"screen scale "<<screenScale<<endl;
     
     
     reset();
@@ -721,6 +719,19 @@ void testApp::draw(){
     if (!showRect)
         drawPlayerInfo();   //show player stats that live outside of the game area
     ofPopMatrix();
+    
+    //planning rect
+    if (showRect){
+        ofSetColor(0);
+        ofFill();
+        ofPushMatrix();
+        ofTranslate(projX,projY);
+        ofScale(projScale,projScale);
+        ofSetRectMode(OF_RECTMODE_CORNER);
+        ofRect(0,0,fieldW*fieldScale,fieldH*fieldScale);
+        
+        ofPopMatrix();
+    }
     
     ofDisableAlphaBlending();
     //set the rect mode back
