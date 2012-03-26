@@ -71,6 +71,9 @@ public:
     void endWave();
     float getInkFromWaves(int num);    //Returns the total ink value of all enemies up to wave num
     
+    //setting up the webcam
+    ofVideoGrabber			video;
+    
     //setting up the kinect
     ofxControlPanel	panel;
 	ofxKinect kinect;
