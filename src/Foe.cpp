@@ -376,6 +376,7 @@ void Foe::standardFindPath(){
     //If it looks like the foe was inked over trying to move along path
     int minListSize=3;  //how small the closed list must be to move along the path
     if (!pathFound && closedList.size()<minListSize && nextNode>2){
+        cout<<"I WAS BLOCKED"<<endl;
         setNextNode();  //go to the next node
         p.pos=moveParticle.pos; //move the foe there
         

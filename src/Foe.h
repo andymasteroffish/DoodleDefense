@@ -25,7 +25,7 @@ public:
     virtual void draw(){}
     void drawDebug();
     void drawExplored();
-    virtual void findPath() {standardFindPath();}
+    virtual void findPath() { standardFindPath(); }
     void standardFindPath();
     void setNextNode();
     int getDistToGoal(int x, int y);

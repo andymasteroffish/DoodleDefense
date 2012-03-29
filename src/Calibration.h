@@ -146,25 +146,25 @@ public:
     bool * playerPause;   //player pauses the game
     bool * noPath;        //becomes true if any foe can't reach the end
     bool * tooMuchInk;    //pauses the game when the player has used more ink than they have
-    bool * depthPause;    //player in frnt of the screen
+    bool * changePause;    //player in frnt of the screen
     bool * gameStarted;   //the kinect must have taken at least one image to play the game
     bool * debugShowKinectVideo;   //take video with the kinect all of the time, not just when taking a picture
     int * takePictureTimer;
     //---------------------
     //Kinect Phase
-    bool * saveDepthBackground;
-    ofxCvGrayscaleImage *   depthImgSmall;      
-    ofxCvGrayscaleImage *   depthBackground;   
-    ofxCvGrayscaleImage *   depthBackgroundDiff;
-    ofRectangle saveDepthBackgroundButton;
-    //depth slider
-    int depthSliderX;
-    int depthSliderY;
-    int depthSliderMinX;
-    int depthSliderMaxX;
-    int depthDiffMax;
-    int depthDiffMin;
-    bool draggingDepthSlider;
+    bool * saveChangeBackground;
+    ofxCvGrayscaleImage *   changeImgSmall;      
+    ofxCvGrayscaleImage *   changeBackground;   
+    ofxCvGrayscaleImage *   changeBackgroundDiff;
+    ofRectangle saveChangeBackgroundButton;
+    //change slider
+    int changeSliderX;
+    int changeSliderY;
+    int changeSliderMinX;
+    int changeSliderMaxX;
+    int changeDiffMax;
+    int changeDiffMin;
+    bool draggingChangeSlider;
     
     ofImage kinectBackground;
     

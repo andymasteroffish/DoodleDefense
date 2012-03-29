@@ -84,13 +84,13 @@ public:
     bool savingBoardPicture;
     bool readyToDrawBoardPicture;
     
-    //tracking the depth info
-    ofxCvGrayscaleImage		depthImg;
-    ofxCvGrayscaleImage     depthImgSmall;      // image of the depth warped to fit the area we're looking at
-    ofxCvGrayscaleImage     depthBackground;    // saved verison of what the depth is like when nobody is in the way
-    ofxCvGrayscaleImage     depthBackgroundDiff;
-    int maxDepthDiff;                           //the amount of difference allowed before the game is paused
-    bool saveDepthBackground;                   //flag to use the next depth image as the background
+    //tracking when there is a hand in front of the board
+    ofxCvGrayscaleImage		changeImg;
+    ofxCvGrayscaleImage     changeImgSmall;         // black and white image warped to fit the area we're looking at
+    ofxCvGrayscaleImage     changeBackground;       // saved verison of what the border of the game is like when nobody is in the way
+    ofxCvGrayscaleImage     changeBackgroundDiff;   // the difference between the change image and the change backgrounnd
+    int maxChangeDiff;                           //the amount of difference allowed before the game is paused
+    bool saveChangeBackground;                   //flag to use the next change image as the background
     
     //color tracking images
     ofxCvColorImage			colorImg;
@@ -124,7 +124,6 @@ public:
     
     //for warping ine incoming data
     ofPoint warpPoints[4];
-    int curWarpPoint;
     
     //positioning the projection
     int projX;
@@ -167,7 +166,7 @@ public:
     bool playerPause;   //player pauses the game
     bool noPath;        //becomes true if any foe can't reach the end
     bool tooMuchInk;    //pauses the game when the player has used more ink than they have
-    bool depthPause;    //player in frnt of the screen
+    bool changePause;    //player in frnt of the screen
     bool showGame;      //shows the game
     bool gameStarted;   //the kinect must have taken at least one image to play the game
     bool debugShowKinectVideo;   //take video with the kinect all of the time, not just when taking a picture

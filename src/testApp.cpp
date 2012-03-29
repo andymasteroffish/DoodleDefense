@@ -20,7 +20,7 @@ void testApp::setup(){
     
     showAllInfo=false;
     
-    depthPause=false;
+    changePause=false;
     playerPause=false;
     
     fastForward=false;
@@ -156,13 +156,11 @@ void testApp::setup(){
     }
     
     //using depth to see when a player is in front of the board
-    saveDepthBackground=true;
-    depthImg.allocate(kinect.width, kinect.height);
-    depthImgSmall.allocate(colorImgMedium.width, colorImgMedium.height);
-    depthBackground.allocate(colorImgMedium.width, colorImgMedium.height);
-    depthBackgroundDiff.allocate(colorImgMedium.width, colorImgMedium.height);
-    
-    curWarpPoint=0; //for repositioning the warp points on the incoming image
+    saveChangeBackground=true;
+    changeImg.allocate(video.width, video.height);
+    changeImgSmall.allocate(colorImgMedium.width, colorImgMedium.height);
+    changeBackground.allocate(colorImgMedium.width, colorImgMedium.height);
+    changeBackgroundDiff.allocate(colorImgMedium.width, colorImgMedium.height);
     
     //taking new pictures of the screen
     takePictureTime=10;
@@ -221,17 +219,17 @@ void testApp::setup(){
     calibration.satImg = &satImg;
     calibration.briImg = &briImg;
     calibration.wallImg = &wallImage;
-    calibration.depthImgSmall = &depthImgSmall;
-    calibration.depthBackground = &depthBackground;
-    calibration.depthBackgroundDiff = &depthBackgroundDiff;
-    calibration.saveDepthBackground = &saveDepthBackground;
+    calibration.changeImgSmall = &changeImgSmall;
+    calibration.changeBackground = &changeBackground;
+    calibration.changeBackgroundDiff = &changeBackgroundDiff;
+    calibration.saveChangeBackground = &saveChangeBackground;
     calibration.takePictureTimer = &takePictureTimer;
     //reasons the game might be paused
     calibration.paused = &paused;
     calibration.playerPause= &playerPause;
     calibration.noPath = &noPath;
     calibration.tooMuchInk = &tooMuchInk;
-    calibration.depthPause = &depthPause;
+    calibration.changePause = &changePause;
     calibration.gameStarted= &gameStarted;
     calibration.debugShowKinectVideo = &debugShowKinectVideo;
     calibration.setup();
@@ -250,6 +248,8 @@ void testApp::setup(){
     totalInk=getInkFromWaves(skipTo);
     curWave=skipTo;
     //numEntrances=2;
+    
+    video.videoSettings();
 }
 
 
@@ -380,7 +380,7 @@ void testApp::update(){
     projX			= panel.getValueF("PROJX");
     projY			= panel.getValueF("PROJY");
     projScale		= panel.getValueF("PROJSCALE");
-    maxDepthDiff    = panel.getValueI("MAXBGDIFF");
+    maxChangeDiff    = panel.getValueI("MAXBGDIFF");
 
     //warp points
     warpPoints[0].x = panel.getValueI("TL_X");
@@ -407,7 +407,7 @@ void testApp::update(){
     updateKinect(); //check on all of the Kinect info
     
     //check if there is any reason to pause the game
-    if (playerPause || noPath || tooMuchInk || depthPause || !showGame || !gameStarted || waveComplete || takePictureTimer>=0 || calibration.phase!="Game")
+    if (playerPause || noPath || tooMuchInk || changePause || !showGame || !gameStarted || waveComplete || takePictureTimer>=0 || calibration.phase!="Game")
         paused=true;
     else
         paused=false;
@@ -603,15 +603,55 @@ void testApp::updateKinect(){
         endPoints[2].set(colorImgMedium.width, colorImgMedium.height);
         endPoints[3].set(0,colorImgMedium.height);
         
+        //check to see if there was motion in front of the camera
+		//set the change video to be the greyscale verison of the incoming color feed
+		changeImg=colorImg;
+        //warp them into the small image
+        changeImgSmall.warpIntoMe(changeImg,warpPoints,endPoints);
+        //save the background if the flag is up
+        if (saveChangeBackground){
+            changeBackground=changeImgSmall;
+            saveChangeBackground=false;  //turn the flag back off
+        }
+        //compare current value to the background
+        changeBackgroundDiff.absDiff(changeBackground,changeImgSmall);
+        //test for significant difference between current depth info and what has been saved as the background
+        unsigned char *	changePixels;
+        changePixels=changeBackgroundDiff.getPixels();
+        
+        //ignore anything inside the maze by painting it black
+        float scaleVal=colorImgMedium.width/fieldW;
+        for (int x=0; x<fieldW*scaleVal; x++){
+            for (int y=0; y<fieldH*scaleVal; y++){
+                if ( x>mazeLeft*scaleVal && x<mazeRight*scaleVal && y>mazeTop*scaleVal && y<mazeBottom*scaleVal){
+                    int pos=y*(fieldW*scaleVal)+x;
+                    changePixels[pos]=0;
+                }
+            }
+        }
+        
+        int totalDiff=0;
+        for (int i=0; i<colorImgMedium.width*colorImgMedium.height; i++){
+            //if the pixel is white, add it
+            if (changePixels[i]>126)
+                totalDiff++;
+        }
+        if (totalDiff>maxChangeDiff){
+            changePause=true;
+            takePictureTimer=-1;    //make sure the timer doesn't go off while we're drawing
+        }else if(changePause){
+            //just went from paused to unpaused. Time to take a pic
+            changePause=false;
+            takePictureTimer=takePictureTime+takePictureDelay;
+        }
+        
         
         //don't do image processing if we aren't taking a picture
         if (takePictureTimer>0 || debugShowKinectVideo){
             //colorImg.setFromPixels(video.getPixels(), video.width, video.height);
-            //if all of the points are set, warp the image
-            if (curWarpPoint==0){
-                //warp into the small image based on the warp points
-                colorImgMedium.warpIntoMe(colorImg, warpPoints, endPoints);
-            }
+            //warp into the small image based on the warp points
+            colorImgMedium.warpIntoMe(colorImg, warpPoints, endPoints);
+            
             
             hsvImg = colorImgMedium;
             hsvImg.convertRgbToHsv();
@@ -776,6 +816,11 @@ void testApp::draw(){
     ofPushMatrix();
     ofTranslate(projX, projY);
     ofScale(projScale, projScale);
+    //show the border
+    ofSetRectMode(OF_RECTMODE_CORNER);
+    ofSetColor(255);
+    borderPics[numEntrances-1].draw(0,0,fieldW*fieldScale,fieldH*fieldScale);
+    //show the game if not taking a picture or calibrating a part that requires not showing the game
     if (showGame && calibration.showGame)
         drawGame();
     if (!showRect)
@@ -822,11 +867,6 @@ void testApp::draw(){
 
 //--------------------------------------------------------------
 void testApp::drawGame(){
-    
-    //show the border
-    ofSetRectMode(OF_RECTMODE_CORNER);
-    ofSetColor(255);
-    borderPics[numEntrances-1].draw(0,0,fieldW*fieldScale,fieldH*fieldScale);
     
     ofSetRectMode(OF_RECTMODE_CENTER);
     if(showAllInfo){
@@ -1280,7 +1320,7 @@ void testApp::convertDrawingToGame(){
     }
    
     //in case the markers fucked with the IR reading, save a new background
-    saveDepthBackground=true;
+    saveChangeBackground=true;
     
     //save these images to the display array for debug purposes
     for (int i=0; i<3; i++)

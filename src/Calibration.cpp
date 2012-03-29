@@ -136,14 +136,14 @@ void Calibration::setup(){
     
     //------------
     //kinect phase
-    saveDepthBackgroundButton.set(100,550,200,100);
-    depthDiffMin=0;
-    depthDiffMax=2000;
-    depthSliderMinX=100;    
-    depthSliderMaxX=850;
-    depthSliderY=850;
-    depthSliderX=ofMap(panel->getValueI("MAXBGDIFF"), depthDiffMin, depthDiffMax, depthSliderMinX, depthSliderMaxX);
-    draggingDepthSlider=false;
+    saveChangeBackgroundButton.set(100,550,200,100);
+    changeDiffMin=0;
+    changeDiffMax=2000;
+    changeSliderMinX=100;    
+    changeSliderMaxX=850;
+    changeSliderY=850;
+    changeSliderX=ofMap(panel->getValueI("MAXBGDIFF"), changeDiffMin, changeDiffMax, changeSliderMinX, changeSliderMaxX);
+    draggingChangeSlider=false;
 }
 
 //------------------------------------------------------
@@ -375,7 +375,7 @@ void Calibration::draw(){
                 pauseInfo+="\nThere is no path for the foes.\n    (If that seems wrong, check the ink tab)";
             if (*tooMuchInk)
                 pauseInfo+="\nThe player went over their ink limit.\n    (If that seems wrong, check the ink tab)";
-            if (*depthPause)
+            if (*changePause)
                 pauseInfo+="\nThe Kinect senses somebody in front of the game.\n    (If that seems wrong, check the Kinect tab)";
             
         }
@@ -394,6 +394,8 @@ void Calibration::draw(){
         otherInfo+="Press UP or DOWN to adjust Kinect angle.";
         font.drawString(otherInfo, 100, 700);
         
+        font.drawString("Running at "+ofToString(ofGetFrameRate())+ "fps", 100, 600);
+        
         
     }
     
@@ -408,51 +410,51 @@ void Calibration::draw(){
         int imgXSpacing=30;
         
         //show the kinect images
-        depthImgSmall->draw(imgXStart, imgY);
-        depthBackground->draw(imgXStart+depthImgSmall->width+imgXSpacing, imgY);
-        depthBackgroundDiff->draw(imgXStart+depthImgSmall->width*2+imgXSpacing*2, imgY);
+        changeImgSmall->draw(imgXStart, imgY);
+        changeBackground->draw(imgXStart+changeImgSmall->width+imgXSpacing, imgY);
+        changeBackgroundDiff->draw(imgXStart+changeImgSmall->width*2+imgXSpacing*2, imgY);
         
         //outline these
         ofSetLineWidth(1);
         ofNoFill();
-        ofRect(imgXStart, imgY, depthImgSmall->width, depthImgSmall->height);
-        ofRect(imgXStart+depthImgSmall->width+imgXSpacing, imgY, depthBackground->width, depthBackground->height);
+        ofRect(imgXStart, imgY, changeImgSmall->width, changeImgSmall->height);
+        ofRect(imgXStart+changeImgSmall->width+imgXSpacing, imgY, changeBackground->width, changeBackground->height);
         
         //make the difference image outline red if it detects somebody
-        if (*depthPause)    ofSetColor(255,100,100);
-        ofRect(imgXStart+depthImgSmall->width*2+imgXSpacing*2, imgY, depthBackground->width, depthBackground->height);
+        if (*changePause)    ofSetColor(255,100,100);
+        ofRect(imgXStart+changeImgSmall->width*2+imgXSpacing*2, imgY, changeBackground->width, changeBackground->height);
         
         //some descriptions
         ofSetColor(255);
         int textOffsetY=15;
-        fontSmall.drawString("What the Kinect sees:", imgXStart, imgY-textOffsetY);
-        fontSmall.drawString("Saved background image:", imgXStart+depthImgSmall->width+imgXSpacing, imgY-textOffsetY);
-        fontSmall.drawString("Difference between these images:", imgXStart+depthImgSmall->width*2+imgXSpacing*2, imgY-textOffsetY);
+        fontSmall.drawString("What the Camera sees:", imgXStart, imgY-textOffsetY);
+        fontSmall.drawString("Saved background image:", imgXStart+changeImgSmall->width+imgXSpacing, imgY-textOffsetY);
+        fontSmall.drawString("Difference between these images (filterring out the game area):", imgXStart+changeImgSmall->width*2+imgXSpacing*2, imgY-textOffsetY);
         
         //print a message about the if the difference image detects anybody
-        if (*depthPause){
+        if (*changePause){
             ofSetColor(255, 100, 100);
-            fontSmall.drawString("I detect somebody's arm in front of the white board", imgXStart+depthImgSmall->width*2+imgXSpacing*2, imgY+depthBackgroundDiff->height+textOffsetY);
+            fontSmall.drawString("I detect somebody's arm in front of the white board", imgXStart+changeImgSmall->width*2+imgXSpacing*2, imgY+changeBackgroundDiff->height+textOffsetY);
         }else{
-            fontSmall.drawString("Nobody in front of the white board", imgXStart+depthImgSmall->width*2+imgXSpacing*2, imgY+depthBackgroundDiff->height+textOffsetY);
+            fontSmall.drawString("Nobody in front of the white board", imgXStart+changeImgSmall->width*2+imgXSpacing*2, imgY+changeBackgroundDiff->height+textOffsetY);
             
         }
         
         //some instructions about the save backgorund button
         ofSetColor(255);
-        fontSmall.drawString("When nobody is in front of the Kinect, the background image should be the same as the Kinect image.\nThis will happen automaticly after it takes a picture, but if it gets stuck try resetting it.", 100,500);
+        fontSmall.drawString("When nobody is in front of the Camera, the background image should be the same as the Kinect image.\nThis will happen automaticly after it takes a picture, but if it gets stuck try resetting it.", 100,500);
         //save backgorund button
-        ofRect(saveDepthBackgroundButton.x, saveDepthBackgroundButton.y, saveDepthBackgroundButton.width, saveDepthBackgroundButton.height);
-        fontSmall.drawString("Click Here To\nSave Background Image", saveDepthBackgroundButton.x+10,saveDepthBackgroundButton.y+45);
+        ofRect(saveChangeBackgroundButton.x, saveChangeBackgroundButton.y, saveChangeBackgroundButton.width, saveChangeBackgroundButton.height);
+        fontSmall.drawString("Click Here To\nSave Background Image", saveChangeBackgroundButton.x+10,saveChangeBackgroundButton.y+45);
         
         //some instructions about the max background diff slider
-        fontSmall.drawString("If the difference image is not picking up on when somebody is in front of it, or it keeps saying that somebody is in front when they aren't,\ntry adjusting the Kinect sensitivity.\nErr on the side of making it higher, because you don't want it to interpret a random shadow as a hand", 100,700);
+        fontSmall.drawString("If the difference image is not picking up on when somebody is in front of it, or it keeps saying that somebody is in front when they aren't,\ntry adjusting the Camera sensitivity.\nErr on the side of making it higher, because you don't want it to interpret a random shadow as a hand", 100,700);
         //and the current level
-        fontSmall.drawString("Current sensitivity: "+ofToString(panel->getValueI("MAXBGDIFF")), depthSliderMinX, depthSliderY-textOffsetY-sliderSize);
+        fontSmall.drawString("Current sensitivity: "+ofToString(panel->getValueI("MAXBGDIFF")), changeSliderMinX, changeSliderY-textOffsetY-sliderSize);
         
         //draw the slider
-        ofLine(depthSliderMinX, depthSliderY, depthSliderMaxX, depthSliderY);
-        ofCircle(depthSliderX, depthSliderY, sliderSize);
+        ofLine(changeSliderMinX, changeSliderY, changeSliderMaxX, changeSliderY);
+        ofCircle(changeSliderX, changeSliderY, sliderSize);
         
     }
     
@@ -613,10 +615,10 @@ void Calibration::mouseDragged(int x, int y, int button){
     //-------------
     //kinect phase
     if (phase=="Kinect"){
-        //see if the depth slider is being dragged
-        if (draggingDepthSlider){
-            depthSliderX=MAX(depthSliderMinX, MIN(depthSliderMaxX, x));
-            panel->setValueI("MAXBGDIFF", ofMap(x,depthSliderMinX, depthSliderMaxX,depthDiffMin,depthDiffMax) );
+        //see if the change slider is being dragged
+        if (draggingChangeSlider){
+            changeSliderX=MAX(changeSliderMinX, MIN(changeSliderMaxX, x));
+            panel->setValueI("MAXBGDIFF", ofMap(x, changeSliderMinX,changeSliderMaxX, changeDiffMin,changeDiffMax) );
 
         }
     
@@ -632,7 +634,10 @@ void Calibration::mousePressed(int x, int y, int button){
         phase=tabLabels[tabNum];
         
         //if this puts us in the game phase, snap a picture
-        if (phase=="Game")   *takePictureTimer=2;
+        if (phase=="Game"){
+            *takePictureTimer=20;            //snap a picture
+            *saveChangeBackground = true;   //save the backgorund 
+        }
     }
     
     //------------
@@ -718,10 +723,10 @@ void Calibration::mousePressed(int x, int y, int button){
     //kinect phase
     if (phase=="Kinect"){
         //check if the user clicked on save backgorund button
-        if (saveDepthBackgroundButton.inside(x, y))
-            *saveDepthBackground = true;
-        //or the depth slider
-        if (ofDist(x,y,depthSliderX,depthSliderY),sliderSize)   draggingDepthSlider=true;
+        if (saveChangeBackgroundButton.inside(x, y))
+            *saveChangeBackground = true;
+        //or the change slider
+        if (ofDist(x,y,changeSliderX,changeSliderY),sliderSize)   draggingChangeSlider=true;
     }
     
     
@@ -736,7 +741,8 @@ void Calibration::mousePressed(int x, int y, int button){
             phase="Ink";
         else if (phase=="Ink"){
             phase="Game";
-            *takePictureTimer=2;    //snap a picture
+            *takePictureTimer=20;            //snap a picture
+            *saveChangeBackground = true;   //save the backgorund
         }
         
     }
@@ -768,7 +774,7 @@ void Calibration::mouseReleased(int x, int y, int button){
     draggingblackThreshSlider=false;
     
     //kinect phase
-    draggingDepthSlider=false;
+    draggingChangeSlider=false;
     
     //save the data
     panel->saveSettings();
