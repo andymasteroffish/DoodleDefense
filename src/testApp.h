@@ -37,7 +37,7 @@ public:
     void setup();
     void loadFromText();
     void update();
-    void updateKinect();
+    void updateVideo();
     void draw();
     void drawGame();
     void drawPlayerInfo();
@@ -74,10 +74,8 @@ public:
     //setting up the webcam
     ofVideoGrabber			video;
     
-    //setting up the kinect
+    //control panel used to save calibration settings and for testing
     ofxControlPanel	panel;
-	ofxKinect kinect;
-    float angle;    //angle of the kinect
     
     //taking a picture of the bard at the end
     ofxCvColorImage			boardImg;
@@ -168,8 +166,7 @@ public:
     bool tooMuchInk;    //pauses the game when the player has used more ink than they have
     bool changePause;    //player in frnt of the screen
     bool showGame;      //shows the game
-    bool gameStarted;   //the kinect must have taken at least one image to play the game
-    bool debugShowKinectVideo;   //take video with the kinect all of the time, not just when taking a picture
+    bool gameStarted;   //the camera must have taken at least one image to play the game
     
     bool fastForward;
     

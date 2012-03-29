@@ -102,16 +102,9 @@ void testApp::setup(){
 
     
     panel.loadSettings("cvSettings.xml");
-	
-    // enable depth->rgb image calibration
-	kinect.setRegistration(true);
     
     //set up video
     video.initGrabber(640, 480);
-    
-    //set up kinect
-//	kinect.init();
-//	kinect.open();
     
     //fonts
     string fontName="JolenesHand-Regular.ttf";
@@ -119,9 +112,6 @@ void testApp::setup(){
     infoFont.loadFont(fontName, 50, true, true);
     infoFontBig.loadFont(fontName, 75, true, true);
     infoFontHuge.loadFont(fontName, 100, true, true);
-	
-    //angle of kinect
-	angle=0;    //make a control panel slide for this
     
     //saving a picture of the board
     boardImg.allocate(fieldW*4,fieldH*4);
@@ -170,7 +160,6 @@ void testApp::setup(){
     showRect=false;
     showGame=false;
     gameStarted=false;
-    debugShowKinectVideo=true;
     
     //set up the images
     wallPixels = new unsigned char [fieldW * fieldH];
@@ -231,7 +220,6 @@ void testApp::setup(){
     calibration.tooMuchInk = &tooMuchInk;
     calibration.changePause = &changePause;
     calibration.gameStarted= &gameStarted;
-    calibration.debugShowKinectVideo = &debugShowKinectVideo;
     calibration.setup();
     
     //set up the scale to display the calibration info if the app would be larger than the screen
@@ -404,7 +392,7 @@ void testApp::update(){
     sat[2]  =   panel.getValueI("BS");
     val[2]  =   panel.getValueI("BV");
     
-    updateKinect(); //check on all of the Kinect info
+    updateVideo(); //check on all of the video info
     
     //check if there is any reason to pause the game
     if (playerPause || noPath || tooMuchInk || changePause || !showGame || !gameStarted || waveComplete || takePictureTimer>=0 || calibration.phase!="Game")
@@ -590,7 +578,7 @@ void testApp::update(){
 }
 
 //--------------------------------------------------------------
-void testApp::updateKinect(){
+void testApp::updateVideo(){
     video.update();
 	
 	if (video.isFrameNew()){
@@ -647,7 +635,7 @@ void testApp::updateKinect(){
         
         
         //don't do image processing if we aren't taking a picture
-        if (takePictureTimer>0 || debugShowKinectVideo){
+        if (takePictureTimer>0 || calibration.phase=="Ink"){
             //colorImg.setFromPixels(video.getPixels(), video.width, video.height);
             //warp into the small image based on the warp points
             colorImgMedium.warpIntoMe(colorImg, warpPoints, endPoints);
@@ -688,113 +676,6 @@ void testApp::updateKinect(){
             blackImg.threshold(blackThreshold,true);
 		}
     }
-    
-    
-//    //KINECT
-//    kinect.update();
-//	
-//	// there is a new frame and we are connected
-//	if(kinect.isFrameNew()) {
-//        
-//        //get end points for warping the images
-//        //MOVED UP TO CAMERA
-//        ofPoint endPoints[4];
-//        endPoints[0].set(0,0);
-//        endPoints[1].set(colorImgMedium.width,0);
-//        endPoints[2].set(colorImgMedium.width, colorImgMedium.height);
-//        endPoints[3].set(0,colorImgMedium.height);
-//		
-//		// load grayscale depth image from the kinect source
-//		depthImg.setFromPixels(kinect.getDepthPixels(), kinect.width, kinect.height);
-//        //warp them into the small image
-//        depthImgSmall.warpIntoMe(depthImg,warpPoints,endPoints);
-//        //save the background if the flag is up
-//        if (saveDepthBackground){
-//            depthBackground=depthImgSmall;
-//            saveDepthBackground=false;  //turn the flag back off
-//        }
-//        //compare current value to the background
-//        depthBackgroundDiff.absDiff(depthBackground,depthImgSmall);
-//        
-//        //test for significant difference between current depth info and what has been saved as the background
-//        unsigned char *	depthPixels;
-//        depthPixels=depthBackgroundDiff.getPixels();
-//        int totalDiff=0;
-//        for (int i=0; i<colorImgMedium.width*colorImgMedium.height; i++){
-//            //if the pixel is white, add it
-//            if (depthPixels[i]>126)
-//                totalDiff++;
-//        }
-//        if (totalDiff>maxDepthDiff){
-//            depthPause=true;
-//            takePictureTimer=-1;    //make sure the timer doesn't go off while we're drawing
-//        }else if(depthPause){
-//            //just went from paused to unpaused. Time to take a pic
-//            depthPause=false;
-//            takePictureTimer=takePictureTime+takePictureDelay;
-//        }
-//        
-//        //check if it is time to save a board picture
-//        if (savingBoardPicture){
-//            savingBoardPicture=false;
-//            ofPoint boardEndPoints[4];
-//            boardEndPoints[0].set(0,0);
-//            boardEndPoints[1].set(boardImg.width,0);
-//            boardEndPoints[2].set(boardImg.width, boardImg.height);
-//            boardEndPoints[3].set(0,boardImg.height);
-//            boardImg.warpIntoMe(colorImg, warpPoints, boardEndPoints);
-//            
-//            readyToDrawBoardPicture=true;   //draw it to the screen so we can save it
-//        }
-//            
-//        //don't do image processing if we aren't taking a picture
-//        if (takePictureTimer>0 || debugShowKinectVideo){
-//            //colorImg.setFromPixels(video.getPixels(), video.width, video.height);
-//            //if all of the points are set, warp the image
-//            if (curWarpPoint==0){
-//                //warp into the small image based on the warp points
-//                colorImgMedium.warpIntoMe(colorImg, warpPoints, endPoints);
-//            }
-//            
-//            hsvImg = colorImgMedium;
-//            hsvImg.convertRgbToHsv();
-//            
-//            hsvImg.convertToGrayscalePlanarImages(hueImg, satImg, briImg);
-//            
-//            unsigned char * colorHsvPixels = hsvImg.getPixels();
-//            
-//            for (int i = 0; i < colorImgMedium.width*colorImgMedium.height*3; i+=3){ //threshold!
-//                
-//                for (int k=0; k<3; k++){
-//                    // since hue is cyclical:
-//                    int hueDiff = colorHsvPixels[i] - hue[k];
-//                    if (hueDiff < -127) hueDiff += 255;
-//                    if (hueDiff > 127) hueDiff -= 255;
-//                    
-//                    if ( (fabs(hueDiff) < hueRange[k]) &&
-//                        (colorHsvPixels[i+1] > (sat[k] - satRange[k]) && colorHsvPixels[i+1] < (sat[k] + satRange[k])) &&
-//                        (colorHsvPixels[i+2] > (val[k] - valRange[k]) && colorHsvPixels[i+2] < (val[k] + valRange[k]))){
-//                        colorPixels[k][i/3] = 255;
-//                    } else {
-//                        colorPixels[k][i/3] = 0;
-//                    }
-//                }
-//                
-//            }
-//            
-//            for (int i=0; i<3; i++){
-//                colorImgs[i].setFromPixels(colorPixels[i], colorImgMedium.width, colorImgMedium.height);
-//            }
-//            
-//            //threshold the sat image to get the black
-//            blackImg.scaleIntoMe(satImg);
-//            blackImg.threshold(blackThreshold,true);
-//		}
-//		
-//        
-//		// update the cv images
-//		depthImg.flagImageChanged();
-//	}
     
 }
 
@@ -1073,8 +954,6 @@ void testApp::drawPlayerInfo(){
 
 //--------------------------------------------------------------
 void testApp::exit() {
-	//kinect.setCameraTiltAngle(0); // zero the tilt on exit
-	kinect.close();
 }
 
 //--------------------------------------------------------------
@@ -1101,19 +980,6 @@ void testApp::keyPressed(int key){
 //            saveDepthBackground=true;
 //            break;
 
-            
-            //KINECT TWEAKS
-        case OF_KEY_UP:
-			angle++;
-			if(angle>30) angle=30;
-			kinect.setCameraTiltAngle(angle);
-			break;
-			
-		case OF_KEY_DOWN:
-			angle--;
-			if(angle<-30) angle=-30;
-			kinect.setCameraTiltAngle(angle);
-			break;
             
         case 'f':
             fastForward=!fastForward;

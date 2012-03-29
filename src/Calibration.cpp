@@ -26,7 +26,7 @@ void Calibration::setup(){
     tabLabels[2]="Colors";
     tabLabels[3]="Ink";
     tabLabels[4]="Game";
-    tabLabels[5]="Kinect";
+    tabLabels[5]="Camera";
     
     //next button
     nextButtonX=1200;
@@ -75,8 +75,8 @@ void Calibration::setup(){
     
     //------------
     //warp points phase
-    kinectImageOffsetX=50;
-    kinectImageOffsetY=300;
+    cameraImageOffsetX=50;
+    cameraImageOffsetY=300;
     warpPointHandleSize=10;
     for (int i=0; i<4; i++)
         draggingWarpPoint[i]=false;
@@ -135,7 +135,7 @@ void Calibration::setup(){
     startGameButton.set(100,150,600,100);
     
     //------------
-    //kinect phase
+    //camera phase
     saveChangeBackgroundButton.set(100,550,200,100);
     changeDiffMin=0;
     changeDiffMax=2000;
@@ -167,10 +167,10 @@ void Calibration::update(){
     if (phase=="Screen"){
         *showRect =true; //show the guideing rectangle
         //set the warp points based on the current values in the panel
-        warpPoints[0].set(panel->getValueF("TL_X")+kinectImageOffsetX,panel->getValueF("TL_Y")+kinectImageOffsetY);
-        warpPoints[1].set(panel->getValueF("TR_X")+kinectImageOffsetX,panel->getValueF("TR_Y")+kinectImageOffsetY);
-        warpPoints[2].set(panel->getValueF("BR_X")+kinectImageOffsetX,panel->getValueF("BR_Y")+kinectImageOffsetY);
-        warpPoints[3].set(panel->getValueF("BL_X")+kinectImageOffsetX,panel->getValueF("BL_Y")+kinectImageOffsetY);
+        warpPoints[0].set(panel->getValueF("TL_X")+cameraImageOffsetX,panel->getValueF("TL_Y")+cameraImageOffsetY);
+        warpPoints[1].set(panel->getValueF("TR_X")+cameraImageOffsetX,panel->getValueF("TR_Y")+cameraImageOffsetY);
+        warpPoints[2].set(panel->getValueF("BR_X")+cameraImageOffsetX,panel->getValueF("BR_Y")+cameraImageOffsetY);
+        warpPoints[3].set(panel->getValueF("BL_X")+cameraImageOffsetX,panel->getValueF("BL_Y")+cameraImageOffsetY);
     }
     
     //don't show the game during the color pashe
@@ -219,9 +219,9 @@ void Calibration::draw(){
         ofSetColor(255);
         screenBackground.draw(0,0);
         
-        //draw the image coming in from the kinect
+        //draw the image coming in from the camera
         ofSetColor(255);
-        colorImg->draw(kinectImageOffsetX,kinectImageOffsetY);
+        colorImg->draw(cameraImageOffsetX,cameraImageOffsetY);
         
         //draw the shape from the warp points
         ofSetLineWidth(1);
@@ -239,7 +239,7 @@ void Calibration::draw(){
         
         //and draw the output image
         ofSetColor(255);
-        colorImgMedium->draw(700,kinectImageOffsetY+colorImgMedium->height);
+        colorImgMedium->draw(700,cameraImageOffsetY+colorImgMedium->height);
         
         
     }
@@ -326,7 +326,7 @@ void Calibration::draw(){
     }
     
     //------------
-    //kinect phase
+    //camera phase
     if (phase=="Game"){
         //draw the color images
         float xOffset=800;
@@ -348,7 +348,7 @@ void Calibration::draw(){
         
          ofSetColor(255);
         //some text about the color images
-        string colorText="These are the color images the Kinect sees.";
+        string colorText="These are the color images the camera sees.";
         colorText+="\nIf they are not seeing the\ncolors drawn on screen";
         colorText+="\nor they are catching\nthings not in that color,";
         colorText+="\ncheck the Colors tab.";
@@ -376,7 +376,7 @@ void Calibration::draw(){
             if (*tooMuchInk)
                 pauseInfo+="\nThe player went over their ink limit.\n    (If that seems wrong, check the ink tab)";
             if (*changePause)
-                pauseInfo+="\nThe Kinect senses somebody in front of the game.\n    (If that seems wrong, check the Kinect tab)";
+                pauseInfo+="\nThe camera senses somebody in front of the game.\n    (If that seems wrong, check the camera tab)";
             
         }
         else{
@@ -386,12 +386,11 @@ void Calibration::draw(){
         font.drawString(pauseInfo,100,300);
         
         //other info
-        string otherInfo="If the game is not pausing when the player is drawing,\ncheck the Kinect tab.\n\n";
+        string otherInfo="If the game is not pausing when the player is drawing,\ncheck the camera tab.\n\n";
         otherInfo+="Press P to pause the game.\n";
         otherInfo+="Press F to fast forward.\n";
         otherInfo+="Press ENTER to reset the game.\n";
         otherInfo+="Press SPACE to take a new image of the board.\n";
-        otherInfo+="Press UP or DOWN to adjust Kinect angle.";
         font.drawString(otherInfo, 100, 700);
         
         font.drawString("Running at "+ofToString(ofGetFrameRate())+ "fps", 100, 600);
@@ -400,8 +399,8 @@ void Calibration::draw(){
     }
     
     //------------
-    //kinect phase
-    if (phase=="Kinect"){
+    //camera phase
+    if (phase=="Camera"){
         
         ofSetColor(255);
         
@@ -409,7 +408,7 @@ void Calibration::draw(){
         int imgXStart=50;
         int imgXSpacing=30;
         
-        //show the kinect images
+        //show the camera images
         changeImgSmall->draw(imgXStart, imgY);
         changeBackground->draw(imgXStart+changeImgSmall->width+imgXSpacing, imgY);
         changeBackgroundDiff->draw(imgXStart+changeImgSmall->width*2+imgXSpacing*2, imgY);
@@ -442,7 +441,7 @@ void Calibration::draw(){
         
         //some instructions about the save backgorund button
         ofSetColor(255);
-        fontSmall.drawString("When nobody is in front of the Camera, the background image should be the same as the Kinect image.\nThis will happen automaticly after it takes a picture, but if it gets stuck try resetting it.", 100,500);
+        fontSmall.drawString("When nobody is in front of the Camera, the background image should be the same as the camera image.\nThis will happen automaticly after it takes a picture, but if it gets stuck try resetting it.", 100,500);
         //save backgorund button
         ofRect(saveChangeBackgroundButton.x, saveChangeBackgroundButton.y, saveChangeBackgroundButton.width, saveChangeBackgroundButton.height);
         fontSmall.drawString("Click Here To\nSave Background Image", saveChangeBackgroundButton.x+10,saveChangeBackgroundButton.y+45);
@@ -521,8 +520,8 @@ void Calibration::mouseDragged(int x, int y, int button){
     //Screen phase
     if (phase=="Screen"){
         //if any warp points are being dragged, move them
-        float newPosX=x-kinectImageOffsetX;   //account for the display offset
-        float newPosY=y-kinectImageOffsetY;
+        float newPosX=x-cameraImageOffsetX+dragOffsetX;   //account for the display offset
+        float newPosY=y-cameraImageOffsetY+dragOffsetY;
         if (draggingWarpPoint[0]){
             panel->setValueF("TL_X", newPosX);
             panel->setValueF("TL_Y", newPosY);
@@ -613,8 +612,8 @@ void Calibration::mouseDragged(int x, int y, int button){
     }
     
     //-------------
-    //kinect phase
-    if (phase=="Kinect"){
+    //camera phase
+    if (phase=="Camera"){
         //see if the change slider is being dragged
         if (draggingChangeSlider){
             changeSliderX=MAX(changeSliderMinX, MIN(changeSliderMaxX, x));
@@ -654,8 +653,11 @@ void Calibration::mousePressed(int x, int y, int button){
     if (phase=="Screen"){
         //see if any handles were selected
         for (int i=0; i<4; i++){
-            if (ofDist(x,y, warpPoints[i].x, warpPoints[i].y)<warpPointHandleSize)
+            if (ofDist(x,y, warpPoints[i].x, warpPoints[i].y)<warpPointHandleSize){
                 draggingWarpPoint[i]=true;
+                dragOffsetX=warpPoints[i].x-x;
+                dragOffsetY=warpPoints[i].y-y;
+            }
         }
     }
     
@@ -720,8 +722,8 @@ void Calibration::mousePressed(int x, int y, int button){
     }
     
     //-------------
-    //kinect phase
-    if (phase=="Kinect"){
+    //camera phase
+    if (phase=="Camera"){
         //check if the user clicked on save backgorund button
         if (saveChangeBackgroundButton.inside(x, y))
             *saveChangeBackground = true;
@@ -773,7 +775,7 @@ void Calibration::mouseReleased(int x, int y, int button){
     //ink phase
     draggingblackThreshSlider=false;
     
-    //kinect phase
+    //camera phase
     draggingChangeSlider=false;
     
     //save the data

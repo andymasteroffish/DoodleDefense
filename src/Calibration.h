@@ -52,6 +52,9 @@ public:
     ofTrueTypeFont font;
     ofTrueTypeFont fontSmall;
     
+    //mouse offset when dragging things
+    float dragOffsetX, dragOffsetY;
+    
     //---------------------
     //location phase
     int xPosSliderX;
@@ -88,8 +91,8 @@ public:
     bool * showRect;
     ofxCvColorImage *   colorImg;
     ofxCvColorImage *   colorImgMedium;
-    int kinectImageOffsetX;
-    int kinectImageOffsetY;
+    int cameraImageOffsetX;
+    int cameraImageOffsetY;
     ofVec2f warpPoints[4];
     float warpPointHandleSize;
     bool draggingWarpPoint[4];
@@ -147,11 +150,10 @@ public:
     bool * noPath;        //becomes true if any foe can't reach the end
     bool * tooMuchInk;    //pauses the game when the player has used more ink than they have
     bool * changePause;    //player in frnt of the screen
-    bool * gameStarted;   //the kinect must have taken at least one image to play the game
-    bool * debugShowKinectVideo;   //take video with the kinect all of the time, not just when taking a picture
+    bool * gameStarted;   //the camera must have taken at least one image to play the game
     int * takePictureTimer;
     //---------------------
-    //Kinect Phase
+    //Camera Phase
     bool * saveChangeBackground;
     ofxCvGrayscaleImage *   changeImgSmall;      
     ofxCvGrayscaleImage *   changeBackground;   
@@ -166,7 +168,7 @@ public:
     int changeDiffMin;
     bool draggingChangeSlider;
     
-    ofImage kinectBackground;
+    ofImage cameraBackground;
     
 
     
