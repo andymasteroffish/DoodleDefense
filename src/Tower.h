@@ -34,6 +34,7 @@ public:
     ofVec2f pos;
     float size;
     float range;
+    float rangePadding;
     
     string type;
     

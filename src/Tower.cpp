@@ -21,6 +21,8 @@ void Tower::setup(float x, float y, float _size){
     
     playerDead=false;
     
+    rangePadding=13;    //slightly increase the range for determining what can be shot
+    
     //everything else is handled by the type specific setup, called in setNewPos
     
 }
@@ -34,6 +36,7 @@ void Tower::setNewPos(float x, float y, float _size){
 }
 
 void Tower::update(){
+    
     //if the target is gone, wer'e not shooting anymore
     if (shooting && target==NULL){
         shooting=false;
@@ -48,8 +51,25 @@ void Tower::update(){
         //increase the timer
         if (!shooting)  timer++;
         if (timer>rechargeTime){
-            readyToShoot=true;
+            
+            
+            //if we have a target already, check if it is still in range
+            bool needsNewTarget=true;   //assume we will need a new atrget
+            if (target!=NULL){
+                if ( pos.distance(target->p.pos) < range +rangePadding ){
+                    needsNewTarget=false;
+                    //shoot at it!
+                    fire(target);
+                }
+                
+            }
+            
+            //if the old target didn't exist or was out of range, tell testApp to find a new one
+            if (needsNewTarget)
+                readyToShoot=true;
         }
+        
+        
         
         //if we are shooting, see if we hit the target
         if (shooting){

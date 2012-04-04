@@ -466,15 +466,16 @@ void testApp::update(){
             towers[i]->update();
             
             //slightly extend the range to catch foes whose particles aren't quite in range, but who's bodies are
-            int rangePadding=13;    
+//            int rangePadding=13;    
             
             //if this tower is ready to shoot and the player isn't dead, check if there is a foe within range
             if (towers[i]->readyToShoot && health>0){
+                
                 float closestDist=10000000;
                 int closestID=-1;
                 for (int k=0; k<foes.size(); k++){
                     float distance=towers[i]->pos.distance(foes[k]->p.pos);
-                    if ( distance < towers[i]->range +rangePadding && distance<closestDist){
+                    if ( distance < towers[i]->range +towers[i]->rangePadding && distance<closestDist){
                         
                         //red can only target foes not immune to red
                         if (towers[i]->type=="red" && foes[k]->type!="immune_red"){
