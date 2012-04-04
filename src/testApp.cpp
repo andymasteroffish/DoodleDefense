@@ -175,6 +175,10 @@ void testApp::setup(){
     borderPics[0].loadImage("walls1Entrance.png");
     borderPics[1].loadImage("walls2Entrance.png");
     
+    //foe images
+    normFoePic[0].loadImage("foePics/normaloutline.png");
+    normFoePic[1].loadImage("foePics/normalfill.png");
+    
     //start wall pixels off blank
     for (int i=0; i<fieldW*fieldH; i++)
         wallPixels[i]=255;
@@ -484,8 +488,8 @@ void testApp::update(){
                             closestID=k;
                         }
                         
-                        //freeze tower cannot shoot the foe if it is already frozen or immune to blue
-                        if (towers[i]->type=="blue" && foes[k]->freezeTimer<=0 && foes[k]->type!="immune_blue"){
+                        //freeze tower cannot shoot the foe if it is already frozen
+                        if (towers[i]->type=="blue" && foes[k]->freezeTimer<=0){
                             closestDist=distance;
                             closestID=k;
                         }
@@ -1290,16 +1294,13 @@ void testApp::spawnFoe(string name, int level){
         ImmuneRedFoe * newFoe=new ImmuneRedFoe;
         foes.push_back(newFoe);
     }
-    else if (name=="immune_blue"){
-        ImmuneBlueFoe * newFoe=new ImmuneBlueFoe;
-        foes.push_back(newFoe);
-    }
     else if (name=="heavy"){
         HeavyFoe * newFoe=new HeavyFoe;
         foes.push_back(newFoe);
     }
     else {  //assume anything that didn't ahve one of the above names is a normal foe
         NormFoe * newFoe=new NormFoe;
+        newFoe->setPics(&normFoePic[0], &normFoePic[1]);
         //add it to the vector
         foes.push_back(newFoe);
     }
@@ -1321,11 +1322,6 @@ void testApp::spawnFoe(string name, int level){
 
 //--------------------------------------------------------------
 void testApp::killFoe(int num){
-    //check if any towers are shooting at this foe
-    for (int k=0; k<towers.size(); k++){
-        if (towers[k]->target==foes[num])
-            towers[k]->shooting=false;   //stop shooting
-    }
     delete foes[num]; //dealocate the meory
     foes.erase(foes.begin()+num);
 }

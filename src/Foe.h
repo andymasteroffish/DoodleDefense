@@ -20,9 +20,11 @@ class Foe{
 public:
     
     void setup(vectorField * _vf, float x, float y, float goalX, float goalY, float _fieldScale, int _fieldW, int _fieldH, int level);
+    void setPics(ofImage * _outline, ofImage * _fill);
     virtual void typeSetup(int level){}
     void update();
-    virtual void draw(){}
+    virtual void draw(){ standardDraw(); }
+    void standardDraw();
     void drawDebug();
     void drawExplored();
     virtual void findPath() { standardFindPath(); }
@@ -75,6 +77,12 @@ public:
     int inkVal;           //how much ink the player gets for killing this one
     
     int freezeTimer;        //how long to stay frozen
+    
+    
+    //draw the foe
+    ofImage * outlinePic;
+    ofImage * fillPic;
+    
 };
 
 

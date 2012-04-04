@@ -10,7 +10,6 @@
 		0A0543441493DE0F007340AC /* Wave.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0A0543431493DE0F007340AC /* Wave.cpp */; };
 		0A0543A7149466FD007340AC /* StealthFoe.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0A0543A6149466FD007340AC /* StealthFoe.cpp */; };
 		0A0543B414947DB1007340AC /* ImmuneRedFoe.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0A0543B314947DB1007340AC /* ImmuneRedFoe.cpp */; };
-		0A0543B7149480E1007340AC /* ImmuneBlueFoe.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0A0543B6149480E1007340AC /* ImmuneBlueFoe.cpp */; };
 		0A0543BA1494827E007340AC /* HeavyFoe.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0A0543B91494827E007340AC /* HeavyFoe.cpp */; };
 		0A0B98501485F8BE001D8405 /* ofxControlPanel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0A0B984B1485F8BE001D8405 /* ofxControlPanel.cpp */; };
 		0A0B98621485F95F001D8405 /* tinyxml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0A0B985B1485F95F001D8405 /* tinyxml.cpp */; };
@@ -100,8 +99,6 @@
 		0A0543A6149466FD007340AC /* StealthFoe.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StealthFoe.cpp; sourceTree = "<group>"; };
 		0A0543B214947DA3007340AC /* ImmuneRedFoe.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImmuneRedFoe.h; sourceTree = "<group>"; };
 		0A0543B314947DB1007340AC /* ImmuneRedFoe.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImmuneRedFoe.cpp; sourceTree = "<group>"; };
-		0A0543B5149480D7007340AC /* ImmuneBlueFoe.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImmuneBlueFoe.h; sourceTree = "<group>"; };
-		0A0543B6149480E1007340AC /* ImmuneBlueFoe.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImmuneBlueFoe.cpp; sourceTree = "<group>"; };
 		0A0543B814948274007340AC /* HeavyFoe.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HeavyFoe.h; sourceTree = "<group>"; };
 		0A0543B91494827E007340AC /* HeavyFoe.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HeavyFoe.cpp; sourceTree = "<group>"; };
 		0A0B983A1485F8BE001D8405 /* guiBaseObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = guiBaseObject.h; sourceTree = "<group>"; };
@@ -428,8 +425,6 @@
 				0A0543A6149466FD007340AC /* StealthFoe.cpp */,
 				0A0543B214947DA3007340AC /* ImmuneRedFoe.h */,
 				0A0543B314947DB1007340AC /* ImmuneRedFoe.cpp */,
-				0A0543B5149480D7007340AC /* ImmuneBlueFoe.h */,
-				0A0543B6149480E1007340AC /* ImmuneBlueFoe.cpp */,
 				0A0543B814948274007340AC /* HeavyFoe.h */,
 				0A0543B91494827E007340AC /* HeavyFoe.cpp */,
 			);
@@ -1009,7 +1004,6 @@
 				0A0543441493DE0F007340AC /* Wave.cpp in Sources */,
 				0A0543A7149466FD007340AC /* StealthFoe.cpp in Sources */,
 				0A0543B414947DB1007340AC /* ImmuneRedFoe.cpp in Sources */,
-				0A0543B7149480E1007340AC /* ImmuneBlueFoe.cpp in Sources */,
 				0A0543BA1494827E007340AC /* HeavyFoe.cpp in Sources */,
 				0AA463FA149A6467007A570D /* BombAnimation.cpp in Sources */,
 				0A9A34A01513D73D00FF4259 /* Calibration.cpp in Sources */,

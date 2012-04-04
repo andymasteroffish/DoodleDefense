@@ -18,7 +18,6 @@
 #include "FastFoe.h"
 #include "StealthFoe.h"
 #include "ImmuneRedFoe.h"
-#include "ImmuneBlueFoe.h"
 #include "HeavyFoe.h"
 
 #include "Tower.h"
@@ -193,6 +192,9 @@ public:
     int startX[2], startY[2];   //multiple entrances
     int goalX[2], goalY[2];
     int numEntrances;           //how many entrance are being used
+    //pics for the foes (outline and fill)
+    ofImage normFoePic[2]; 
+    
     
     bool showAllInfo;   //shows all of the bullshit lines and data
     

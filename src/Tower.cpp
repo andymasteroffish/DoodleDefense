@@ -34,6 +34,16 @@ void Tower::setNewPos(float x, float y, float _size){
 }
 
 void Tower::update(){
+    //if the target is gone, wer'e not shooting anymore
+    if (shooting && target==NULL){
+        shooting=false;
+        
+        //if this was a bomb tower, detonate the bomb where it was
+        if (type=="green")
+            bombHit=true;
+        
+    }
+    
     if (! *paused ){
         //increase the timer
         if (!shooting)  timer++;

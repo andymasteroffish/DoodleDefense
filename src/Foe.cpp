@@ -49,6 +49,12 @@ void Foe::setup(vectorField * _vf, float x, float y, float _goalX, float _goalY,
 }
 
 //------------------------------------------------------------
+void Foe::setPics(ofImage * _outline, ofImage * _fill){
+    outlinePic=_outline;
+    fillPic=_fill;
+}
+
+//------------------------------------------------------------
 void Foe::update(){
     if (! *paused){
         bool frozen=false;
@@ -127,7 +133,36 @@ void Foe::update(){
 }
 
 //------------------------------------------------------------
-//Normal draw is handled by the different foe types
+void Foe::standardDraw(){
+    
+    ofFill();
+    
+    
+    //have it flash if there is no path
+    if (!pathFound){
+        drawExplored();
+    }
+    
+    //get the angle the foe is facing
+    float angle=atan2(moveParticle.pos.y-p.pos.y, moveParticle.pos.x-p.pos.x);
+    
+    
+    //draw the outline and the fill
+    ofPushMatrix();
+    ofTranslate(p.pos.x, p.pos.y);
+    ofRotate(ofRadToDeg(angle)-90); //the foes are drawn facing up, so they need to be rotated 90 degrees
+    //ofScale(0.15,0.15);
+    
+    //set the level of fill based on the health
+    ofSetColor(255,255,255, ofMap(hp, 0,fullHP, 0,255) );
+    fillPic->draw(0,0);
+    ofSetColor(255);
+    outlinePic->draw(0,0);
+    ofPopMatrix();
+    
+    
+    
+}
 
 //------------------------------------------------------------
 void Foe::drawDebug(){

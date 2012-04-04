@@ -17,7 +17,7 @@ void BombTower::typeSetup(){
     
     type="green";
     
-    blastRadius=size*3;
+    blastRadius=size*3.5;
 }
 
 void BombTower::draw(){
