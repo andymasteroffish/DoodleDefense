@@ -635,7 +635,8 @@ void testApp::updateVideo(){
         
         
         //don't do image processing if we aren't taking a picture
-        if (takePictureTimer>0 || calibration.phase=="Ink"){
+        //we always want to see the reult if we are doing certain steps of calibration, though
+        if (takePictureTimer>0 || calibration.phase=="Ink" || calibration.phase=="Screen" || calibration.phase=="Colors"){
             //colorImg.setFromPixels(video.getPixels(), video.width, video.height);
             //warp into the small image based on the warp points
             colorImgMedium.warpIntoMe(colorImg, warpPoints, endPoints);
