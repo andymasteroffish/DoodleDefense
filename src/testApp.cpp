@@ -164,6 +164,7 @@ void testApp::setup(){
     //set up the images
     wallPixels = new unsigned char [fieldW * fieldH];
     wallImage.allocate(fieldW, fieldH);
+    lastSafeWallImage.allocate(fieldW, fieldH);
     
     //set the maze border
     mazeTop=10;
@@ -214,6 +215,7 @@ void testApp::setup(){
     calibration.hueImg = &hueImg;
     calibration.satImg = &satImg;
     calibration.briImg = &briImg;
+    calibration.blackImg = &blackImg;
     calibration.wallImg = &wallImage;
     calibration.changeImgSmall = &changeImgSmall;
     calibration.changeBackground = &changeBackground;
@@ -634,6 +636,23 @@ void testApp::updateVideo(){
                     int pos=y*(fieldW*scaleVal)+x;
                     changePixels[pos]=0;
                 }
+                
+                //black out the left entrance and right exit
+                int entranceY= (mazeBottom-mazeTop)/2+11;
+                int entranceH=6;
+                if (y>(entranceY-entranceH)*scaleVal && y<(entranceY+entranceH)*scaleVal){
+                    int pos=y*(fieldW*scaleVal)+x;
+                    changePixels[pos]=0;
+                }
+                
+                //black out the left entrance and right exit
+                int entranceX= (mazeRight-mazeLeft)/2+11;
+                int entranceW=6;
+                if (x>(entranceX-entranceW)*scaleVal*(1-paddingPrc+0.01) && x<(entranceX+entranceW)*scaleVal*(1-paddingPrc+0.01)){
+                    int pos=y*(fieldW*scaleVal)+x;
+                    changePixels[pos]=0;
+                }
+                
             }
         }
         
@@ -842,7 +861,8 @@ void testApp::drawGame(){
     if (damageFlashTimer-- >0){
         ofSetColor(255, 0, 0, 200);
         ofSetRectMode(OF_RECTMODE_CORNER);
-        ofRect(0,0,fieldW*fieldScale,fieldH*fieldScale);
+        float padding=200;
+        ofRect(padding,padding,fieldW*fieldScale-padding*2,fieldH*fieldScale-padding*2);
     }
     
 }
@@ -1243,10 +1263,21 @@ void testApp::convertDrawingToGame(){
     //if there is nothing wrong, the game is ready to continue
     //but we should check to see if any towers from the last safe game state were removed
     if (!tooMuchInk && !noPath){
-         cout<<"There were "<<lastSafeTowerSet.size()<<" towers from last time"<<endl;
+        //check the current wall image against the last one to see if any big chunks of wall were erased
+        unsigned char * lastSafeWallPixels=lastSafeWallImage.getPixels();
+        //go thorugh and see how many pixels that had been black are no white
+        int totalDiff=0;
+        for (int i=0; i<fieldW*fieldH; i++){
+            if (lastSafeWallPixels[i]==0 && wallPixels[i]==255)
+                totalDiff++;
+        }
+        cout<<"total wall difference: "<<totalDiff<<endl;
+        
+        
+        
         //go through the tower data from the last safe state and see if antyhign is missing
         for (int i=0; i<lastSafeTowerSet.size(); i++){
-            bool found=false;
+            bool found=false;   //assume the tower will not be found
             
             //checking each tower might be a super innificient way of doing this
             for (int k=0; k<towers.size(); k++){
@@ -1257,7 +1288,7 @@ void testApp::convertDrawingToGame(){
             }
             
             if (!found){
-                cout<<"you killed the tower at "<<lastSafeTowerSet[i].pos.x<<" , "<<lastSafeTowerSet[i].pos.y<<endl;
+                cout<<"you erased the tower at "<<lastSafeTowerSet[i].pos.x<<" , "<<lastSafeTowerSet[i].pos.y<<endl;
                 
                 //figure out how much ink that tower was worth
                 float inkValue;
@@ -1279,6 +1310,9 @@ void testApp::convertDrawingToGame(){
             
         }
         
+        //save the current wall image
+        lastSafeWallImage=wallImage;
+        
         //save all of the current tower info to be checked next time
         lastSafeTowerSet.clear();
         for (int i=0; i<towers.size(); i++){
@@ -1288,7 +1322,6 @@ void testApp::convertDrawingToGame(){
             newInfo.type=towers[i]->type;
             lastSafeTowerSet.push_back(newInfo);
         }
-        cout<<"There are "<<lastSafeTowerSet.size()<<" towers saved now"<<endl;
     }
 }
 

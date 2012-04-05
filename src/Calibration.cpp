@@ -323,6 +323,11 @@ void Calibration::draw(){
         ofSetColor(100, 255, 100);
         if (abs(displayValue)>30)   ofSetColor(255, 100, 100);
         font.drawString("Current ink level: "+ofToString(displayValue), 200, inkRefundButton.y-50);
+        
+        //testing
+        ofSetColor(255);
+        blackImg->draw(500,500);
+        
     }
     
     //------------

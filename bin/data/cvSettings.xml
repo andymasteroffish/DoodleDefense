@@ -44,7 +44,7 @@
     <val_0>307.000000</val_0>
 </BL_Y>
 <BTHRESHOLD>
-    <val_0>102.000000</val_0>
+    <val_0>35.000000</val_0>
 </BTHRESHOLD>
 <PROJX>
     <val_0>1890.000000</val_0>
@@ -56,7 +56,7 @@
     <val_0>0.484308</val_0>
 </PROJSCALE>
 <MAXBGDIFF>
-    <val_0>53.000000</val_0>
+    <val_0>58.000000</val_0>
 </MAXBGDIFF>
 <PICTURETIME>
     <val_0>25.000000</val_0>
@@ -95,16 +95,16 @@
     <val_0>128.000000</val_0>
 </GV>
 <BH>
-    <val_0>110.000000</val_0>
+    <val_0>113.000000</val_0>
 </BH>
 <BS>
-    <val_0>194.000000</val_0>
+    <val_0>253.000000</val_0>
 </BS>
 <BV>
-    <val_0>148.000000</val_0>
+    <val_0>163.000000</val_0>
 </BV>
 <INKREFUND>
-    <val_0>116.000000</val_0>
+    <val_0>2527.000000</val_0>
 </INKREFUND>
 <HUDX>
     <val_0>350.000000</val_0>
@@ -134,11 +134,11 @@
     <val_0>55.250000</val_0>
 </GVALRANGE>
 <BHUERANGE>
-    <val_0>5.000000</val_0>
+    <val_0>14.000000</val_0>
 </BHUERANGE>
 <BSATRANGE>
-    <val_0>74.000000</val_0>
+    <val_0>68.000000</val_0>
 </BSATRANGE>
 <BVALRANGE>
-    <val_0>128.000000</val_0>
+    <val_0>31.000000</val_0>
 </BVALRANGE>

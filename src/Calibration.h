@@ -128,6 +128,7 @@ public:
     //Ink phase
     //black threshold
     ofxCvGrayscaleImage *	wallImg;  
+    ofxCvGrayscaleImage * blackImg;
     int blackThreshSliderX;
     int blackThreshSliderY;
     int blackThreshSliderMinX;

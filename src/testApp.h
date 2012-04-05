@@ -141,6 +141,8 @@ public:
     //images as lists of pixels showing where the marker is
     ofxCvGrayscaleImage 	wallImage;  
     unsigned char *			wallPixels;
+    //when the screen is sucessfully redrawn, we want to keep track of what it looks like to compare between draws
+    ofxCvGrayscaleImage 	lastSafeWallImage; 
     
     
     //images to display as the boarders
