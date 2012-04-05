@@ -56,8 +56,18 @@ public:
     bool bombHit;   
     
     //keeping track of when a tower goes away
+    //I DON'T THINK THIS IS BEING USED
     int idNum;
     
+};
+
+
+//simple data class used to compare tower setups
+class TowerInfo{
+public:
+    ofVec2f pos;
+    float size;
+    string type;
 };
 
 

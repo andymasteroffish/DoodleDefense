@@ -203,8 +203,9 @@ public:
     
     //towers - the point of the damn game
     vector <Tower *> towers;
-    vector <Tower *> lastSafeTowerSet;  //all the locaitons of the towers when no problem was encounterred
+    vector <TowerInfo> lastSafeTowerSet;  //all the locaitons of the towers when no problem was encounterred
     int towerID;    //goes up each time a tower is made so they each have a unique ID number
+    float towerRefund;  //percentage of the value of the tower that the user gets back if they erase one
     
     //vector to hold the bomb animations
     vector<BombAnimation> bombAnimations;

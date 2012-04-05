@@ -179,6 +179,9 @@ void testApp::setup(){
     normFoePic[0].loadImage("foePics/normaloutline.png");
     normFoePic[1].loadImage("foePics/normalfill.png");
     
+    //towers
+    towerRefund=0.7;    //what percentage of the tower's value a player gets back when they kill one
+    
     //start wall pixels off blank
     for (int i=0; i<fieldW*fieldH; i++)
         wallPixels[i]=255;
@@ -1154,7 +1157,6 @@ void testApp::convertDrawingToGame(){
             //pause the game if this foe can't reach the end
             if (!foes[i]->pathFound){
                 noPath=true;
-                break;
             }
             //you could also, create a temp foe at the end, and check to see if it can make it to the start
             
@@ -1236,6 +1238,57 @@ void testApp::convertDrawingToGame(){
         //return; //don't need to bother checking anything else
     }else if (tooMuchInk){  //if they just fixed using too much ink, unpause the game
         tooMuchInk=false;
+    }
+    
+    //if there is nothing wrong, the game is ready to continue
+    //but we should check to see if any towers from the last safe game state were removed
+    if (!tooMuchInk && !noPath){
+         cout<<"There were "<<lastSafeTowerSet.size()<<" towers from last time"<<endl;
+        //go through the tower data from the last safe state and see if antyhign is missing
+        for (int i=0; i<lastSafeTowerSet.size(); i++){
+            bool found=false;
+            
+            //checking each tower might be a super innificient way of doing this
+            for (int k=0; k<towers.size(); k++){
+                if ( lastSafeTowerSet[i].pos.distance(towers[k]->pos)<lastSafeTowerSet[i].size && lastSafeTowerSet[i].type==towers[k]->type){
+                    found=true;
+                    break;
+                }
+            }
+            
+            if (!found){
+                cout<<"you killed the tower at "<<lastSafeTowerSet[i].pos.x<<" , "<<lastSafeTowerSet[i].pos.y<<endl;
+                
+                //figure out how much ink that tower was worth
+                float inkValue;
+                if (lastSafeTowerSet[i].type=="red") inkValue=rInkValue*lastSafeTowerSet[i].size;
+                if (lastSafeTowerSet[i].type=="green") inkValue=gInkValue*lastSafeTowerSet[i].size;
+                if (lastSafeTowerSet[i].type=="blue") inkValue=bInkValue*lastSafeTowerSet[i].size;
+                
+                //remove that ink from the player's reserve
+                totalInk-=inkValue;
+                //and spawn ink particles equal to the refund they should get
+                for (int r=0; r<inkValue*towerRefund; r++){
+                    particle newInkParticle;
+                    newInkParticle.setInitialCondition(lastSafeTowerSet[i].pos.x,lastSafeTowerSet[i].pos.y,ofRandom(-5,5),ofRandom(-5,5));
+                    inkParticles.push_back(newInkParticle);
+                }
+                
+            }
+            
+            
+        }
+        
+        //save all of the current tower info to be checked next time
+        lastSafeTowerSet.clear();
+        for (int i=0; i<towers.size(); i++){
+            TowerInfo newInfo;
+            newInfo.pos=towers[i]->pos;
+            newInfo.size=towers[i]->size;
+            newInfo.type=towers[i]->type;
+            lastSafeTowerSet.push_back(newInfo);
+        }
+        cout<<"There are "<<lastSafeTowerSet.size()<<" towers saved now"<<endl;
     }
 }
 
