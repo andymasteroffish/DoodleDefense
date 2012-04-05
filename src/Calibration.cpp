@@ -138,11 +138,12 @@ void Calibration::setup(){
     //camera phase
     saveChangeBackgroundButton.set(100,550,200,100);
     changeDiffMin=0;
-    changeDiffMax=2000;
+    changeDiffMax=3000;
     changeSliderMinX=100;    
     changeSliderMaxX=850;
     changeSliderY=850;
-    changeSliderX=ofMap(panel->getValueI("MAXBGDIFF"), changeDiffMin, changeDiffMax, changeSliderMinX, changeSliderMaxX);
+    changeSliderX=ofMap( panel->getValueI("MAXBGDIFF"), changeDiffMin, changeDiffMax, changeSliderMinX, changeSliderMaxX);
+    
     draggingChangeSlider=false;
 }
 
@@ -240,7 +241,6 @@ void Calibration::draw(){
         //and draw the output image
         ofSetColor(255);
         colorImgMedium->draw(700,cameraImageOffsetY+colorImgMedium->height);
-        
         
     }
     
@@ -617,7 +617,12 @@ void Calibration::mouseDragged(int x, int y, int button){
         //see if the change slider is being dragged
         if (draggingChangeSlider){
             changeSliderX=MAX(changeSliderMinX, MIN(changeSliderMaxX, x));
-            panel->setValueI("MAXBGDIFF", ofMap(x, changeSliderMinX,changeSliderMaxX, changeDiffMin,changeDiffMax) );
+            //put a curve on it
+            float prc=ofMap(x, changeSliderMinX,changeSliderMaxX, 0,1);
+            prc=powf(prc,2);
+            panel->setValueI("MAXBGDIFF", ofMap(prc, 0,1, changeDiffMin,changeDiffMax) );
+
+            //panel->setValueI("MAXBGDIFF", ofMap(x, changeSliderMinX,changeSliderMaxX, changeDiffMin,changeDiffMax) );
 
         }
     

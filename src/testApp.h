@@ -202,8 +202,9 @@ public:
     vector <particle> inkParticles;
     
     //towers - the point of the damn game
-    //needs to be a pointer for polymorphism
     vector <Tower *> towers;
+    vector <Tower *> lastSafeTowerSet;  //all the locaitons of the towers when no problem was encounterred
+    int towerID;    //goes up each time a tower is made so they each have a unique ID number
     
     //vector to hold the bomb animations
     vector<BombAnimation> bombAnimations;

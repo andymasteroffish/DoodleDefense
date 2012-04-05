@@ -16,7 +16,7 @@
 class Tower{
 public:
     
-    void setup(float x, float y, float _size);
+    void setup(float x, float y, float _size, int _idNum);
     virtual void typeSetup(){}
     void update();
     virtual void draw(){}
@@ -55,6 +55,8 @@ public:
     float blastRadius;  //how much will be effected when the bullet hits
     bool bombHit;   
     
+    //keeping track of when a tower goes away
+    int idNum;
     
 };
 

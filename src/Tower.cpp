@@ -8,8 +8,9 @@
 
 #include "Tower.h"
 
-void Tower::setup(float x, float y, float _size){
+void Tower::setup(float x, float y, float _size, int _idNum){
     setNewPos(x,y,_size);
+    idNum=_idNum;
     
     //values that will be the same for all towers
     found=true;
@@ -39,6 +40,7 @@ void Tower::update(){
     
     //if the target is gone, wer'e not shooting anymore
     if (shooting && target==NULL){
+        cout<<"STOP SHOOTING"<<endl;
         shooting=false;
         
         //if this was a bomb tower, detonate the bomb where it was

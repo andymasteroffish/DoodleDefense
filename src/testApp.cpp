@@ -50,7 +50,7 @@ void testApp::setup(){
     panel.addSlider("proj X ", "PROJX", 0, 0, 2700, true);
     panel.addSlider("proj Y ", "PROJY", 0, 0, 900, true);
     panel.addSlider("proj scale ", "PROJSCALE", 1, 0.2, 3, false);
-    panel.addSlider("max background diff ", "MAXBGDIFF", 6, 0, 4000, true); //max should be 2000
+    panel.addSlider("max background diff ", "MAXBGDIFF", 6, 0, 3000, true);
     
     //temporary values for getting HUD elements right
      panel.addSlider("HUD X", "HUDX", 0, -1500, 1500, true);
@@ -335,6 +335,8 @@ void testApp::reset(){
     paused=false;
     noPath=false;
     
+    towerID=0;
+    
     curWave=-1;
     wavesDone=false;
     loadFromText();
@@ -448,10 +450,8 @@ void testApp::update(){
                 for (int p=0; p<foes[i]->inkVal;p++){
                     particle newInkParticle;
                     newInkParticle.setInitialCondition(foes[i]->p.pos.x,foes[i]->p.pos.y,ofRandom(-5,5),ofRandom(-5,5));
-                    //newInkParticle.setInitialCondition(600,600,ofRandom(-1,1),ofRandom(-1,1));
                     inkParticles.push_back(newInkParticle);
                 }
-                //totalInk+=foes[i]->inkVal;  //give the player more ink
                 killFoe(i);
             }
         }
@@ -464,9 +464,6 @@ void testApp::update(){
         //update the towers
         for (int i=0; i<towers.size(); i++){
             towers[i]->update();
-            
-            //slightly extend the range to catch foes whose particles aren't quite in range, but who's bodies are
-//            int rangePadding=13;    
             
             //if this tower is ready to shoot and the player isn't dead, check if there is a foe within range
             if (towers[i]->readyToShoot && health>0){
@@ -549,9 +546,9 @@ void testApp::update(){
         }
     }
     
+    /*
     //check how much ink has been used
     inkUsed= 0;  
-    
     
     //check black pixels
     for (int i=0; i<fieldW*fieldH; i++){
@@ -580,6 +577,7 @@ void testApp::update(){
     }else if (tooMuchInk){  //if they just fixed using too much ink, unpause the game
         tooMuchInk=false;
     }
+    */
 }
 
 //--------------------------------------------------------------
@@ -596,11 +594,23 @@ void testApp::updateVideo(){
         endPoints[2].set(colorImgMedium.width, colorImgMedium.height);
         endPoints[3].set(0,colorImgMedium.height);
         
+        //expand the differencing image to include space on the right of the playing field
+        float paddingPrc=0.07;
+        ofPoint widePoints[4];
+        for (int i=0; i<4; i++)
+            widePoints[i]=warpPoints[i];
+        widePoints[1].x += (widePoints[1].x-widePoints[0].x)*paddingPrc;
+        widePoints[2].x += (widePoints[2].x-widePoints[3].x)*paddingPrc;
+        //make sure thes poitns don't go out of bounds
+        widePoints[1].x = MIN(colorImg.width,widePoints[1].x);
+        widePoints[2].x = MIN(colorImg.width,widePoints[2].x);
+        
         //check to see if there was motion in front of the camera
 		//set the change video to be the greyscale verison of the incoming color feed
 		changeImg=colorImg;
-        //warp them into the small image
-        changeImgSmall.warpIntoMe(changeImg,warpPoints,endPoints);
+        //warp them into the small(er) image
+        changeImgSmall.warpIntoMe(changeImg,widePoints,endPoints);
+        
         //save the background if the flag is up
         if (saveChangeBackground){
             changeBackground=changeImgSmall;
@@ -616,17 +626,20 @@ void testApp::updateVideo(){
         float scaleVal=colorImgMedium.width/fieldW;
         for (int x=0; x<fieldW*scaleVal; x++){
             for (int y=0; y<fieldH*scaleVal; y++){
-                if ( x>mazeLeft*scaleVal && x<mazeRight*scaleVal && y>mazeTop*scaleVal && y<mazeBottom*scaleVal){
+                //this is using some MAGIC NUMBERS at the moment. Might want to try and fix that
+                if ( x>mazeLeft*scaleVal*(1-paddingPrc+0.01) && x<mazeRight*scaleVal*(1-paddingPrc+0.01) && y>mazeTop*scaleVal && y<mazeBottom*scaleVal){
                     int pos=y*(fieldW*scaleVal)+x;
                     changePixels[pos]=0;
                 }
             }
         }
         
+        changeBackgroundDiff.flagImageChanged();    //let the image know we messed with the pixels
+        
         int totalDiff=0;
         for (int i=0; i<colorImgMedium.width*colorImgMedium.height; i++){
             //if the pixel is white, add it
-            if (changePixels[i]>126)
+            if (changePixels[i]>80)
                 totalDiff++;
         }
         if (totalDiff>maxChangeDiff){
@@ -1170,9 +1183,9 @@ void testApp::convertDrawingToGame(){
     int maxArea=(fieldW*fieldH)/2;
     int maxNumberOfBlobs=25;
     
-    //expand the pixels in the images BEFORE WE DID THIS, THE MIN AREA WAS SET TO 3
+    //expand the pixels in the images 
     for (int i=0; i<3; i++)
-        colorImgs[i].dilate_3x3();      //you can do this to your black image instead of your for loop
+        colorImgs[i].dilate_3x3();    
     
     contourFinder.findContours(colorImgs[0], minArea, maxArea, maxNumberOfBlobs, false);
     checkTowers("red");
@@ -1197,6 +1210,33 @@ void testApp::convertDrawingToGame(){
     //save these images to the display array for debug purposes
     for (int i=0; i<3; i++)
         colorImgsDisplay[i]=colorImgs[i];
+    
+    
+    //check how much ink has been used
+    inkUsed= 0;  
+    //check black pixels
+    for (int i=0; i<fieldW*fieldH; i++){
+        if (wallPixels[i]==0) inkUsed+=blackInkValue;
+    }
+    //check towers
+    for (int i=0; i<towers.size(); i++){
+        if (towers[i]->type=="red") inkUsed+=rInkValue*towers[i]->size;
+        if (towers[i]->type=="green") inkUsed+=gInkValue*towers[i]->size;
+        if (towers[i]->type=="blue") inkUsed+=bInkValue*towers[i]->size;
+    }
+    //let calibration know how much was used
+    calibration.inkUsedBeforeRefund=inkUsed;
+    //factor in the refund
+    inkUsed-=inkRefund;
+    //make sure ink used is not negative
+    inkUsed=MAX(0,inkUsed);
+    //check if they used more ink than they have
+    if (inkUsed>totalInk){
+        tooMuchInk=true;
+        //return; //don't need to bother checking anything else
+    }else if (tooMuchInk){  //if they just fixed using too much ink, unpause the game
+        tooMuchInk=false;
+    }
 }
 
 //--------------------------------------------------------------
@@ -1224,14 +1264,11 @@ void testApp::checkTowers(string type){
             if (i==skip[k]) skipMe=true;
         }
         
-        //to encourage circles, take the smaller of width or height
-        //float size=MIN(contourFinder.blobs[i].boundingRect.width,contourFinder.blobs[i].boundingRect.height)/2;
-        //float size=contourFinder.blobs[i].area/26;
         //find the radius
         float size=sqrt( contourFinder.blobs[i].area/PI )/2;    //diviing by 2 because the image is twice the size of the field
         
-        //make sure the blog is at least pretty close to being a circle
-        //check compacntess of the blob. a value of 1 would be a perfetc circle. Higher values are less compact
+        //make sure the blob is at least pretty close to being a circle
+        //check compacntess of the blob. a value of 1 would be a perfect circle. Higher values are less compact
         float compactness = (float)((contourFinder.blobs[i].length*contourFinder.blobs[i].length/contourFinder.blobs[i].area)/FOUR_PI);
         if (compactness>maxCompactness) skipMe=true;
         
@@ -1248,7 +1285,7 @@ void testApp::checkTowers(string type){
                     towers[k]->found=true;
                     
                     //was the tower built up? adjust its size and center position
-                    //the imae is twice the size of the field, so we need to cut the values in half before scalling them up to game size
+                    //the image is twice the size of the field, so we need to cut the values in half before scalling them up to game size
                     towers[k]->setNewPos(contourFinder.blobs[i].centroid.x*fieldScale*0.5, contourFinder.blobs[i].centroid.y*fieldScale*0.5, size*fieldScale);
                 }
             }
@@ -1257,21 +1294,21 @@ void testApp::checkTowers(string type){
             if (!towerHere){
                 if (type=="red"){
                     HitTower * newTower=new HitTower();
-                    newTower->setup(contourFinder.blobs[i].centroid.x*fieldScale*0.5, contourFinder.blobs[i].centroid.y*fieldScale*0.5, size*fieldScale);
+                    newTower->setup(contourFinder.blobs[i].centroid.x*fieldScale*0.5, contourFinder.blobs[i].centroid.y*fieldScale*0.5, size*fieldScale, ++towerID);
                     newTower->showAllInfo=&showAllInfo;
                     newTower->paused=&paused;
                     towers.push_back(newTower);
                 }
                 if (type=="green"){
                     BombTower * newTower=new BombTower();
-                    newTower->setup(contourFinder.blobs[i].centroid.x*fieldScale*0.5, contourFinder.blobs[i].centroid.y*fieldScale*0.5, size*fieldScale);
+                    newTower->setup(contourFinder.blobs[i].centroid.x*fieldScale*0.5, contourFinder.blobs[i].centroid.y*fieldScale*0.5, size*fieldScale, ++towerID);
                     newTower->showAllInfo=&showAllInfo;
                     newTower->paused=&paused;
                     towers.push_back(newTower);
                 }
                 if (type=="blue"){
                     FreezeTower * newTower=new FreezeTower();
-                    newTower->setup(contourFinder.blobs[i].centroid.x*fieldScale*0.5, contourFinder.blobs[i].centroid.y*fieldScale*0.5, size*fieldScale);
+                    newTower->setup(contourFinder.blobs[i].centroid.x*fieldScale*0.5, contourFinder.blobs[i].centroid.y*fieldScale*0.5, size*fieldScale, ++towerID);
                     newTower->showAllInfo=&showAllInfo;
                     newTower->paused=&paused;
                     towers.push_back(newTower);
@@ -1323,6 +1360,13 @@ void testApp::spawnFoe(string name, int level){
 
 //--------------------------------------------------------------
 void testApp::killFoe(int num){
+    //go through and find any towers targetting this foe and remove the target
+    for (int i=0; i<towers.size(); i++){
+        if (towers[i]->target==foes[num]){
+            towers[i]->target=NULL;
+        }
+    }
+    
     delete foes[num]; //dealocate the meory
     foes.erase(foes.begin()+num);
 }
