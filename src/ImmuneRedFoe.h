@@ -15,7 +15,7 @@ class ImmuneRedFoe : public Foe{
 public:
     
     void typeSetup(int level);
-    void draw();
+    //void draw();
     
 };
 

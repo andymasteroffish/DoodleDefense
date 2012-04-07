@@ -16,6 +16,7 @@ void ImmuneRedFoe::typeSetup(int level){
 
 
 //------------------------------------------------------------
+/*
 void ImmuneRedFoe::draw(){
     ofFill();
     
@@ -47,3 +48,4 @@ void ImmuneRedFoe::draw(){
     ofEndShape(false);
     
 }
+ */

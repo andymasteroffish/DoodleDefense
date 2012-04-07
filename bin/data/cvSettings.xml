@@ -20,43 +20,43 @@
     <val_0>1.166667</val_0>
 </RECTSCALE>
 <TL_X>
-    <val_0>167.000000</val_0>
+    <val_0>150.000000</val_0>
 </TL_X>
 <TL_Y>
-    <val_0>123.000000</val_0>
+    <val_0>107.000000</val_0>
 </TL_Y>
 <TR_X>
-    <val_0>420.000000</val_0>
+    <val_0>431.000000</val_0>
 </TR_X>
 <TR_Y>
-    <val_0>132.000000</val_0>
+    <val_0>95.000000</val_0>
 </TR_Y>
 <BR_X>
-    <val_0>444.000000</val_0>
+    <val_0>463.000000</val_0>
 </BR_X>
 <BR_Y>
-    <val_0>313.000000</val_0>
+    <val_0>304.000000</val_0>
 </BR_Y>
 <BL_X>
-    <val_0>143.000000</val_0>
+    <val_0>119.000000</val_0>
 </BL_X>
 <BL_Y>
-    <val_0>307.000000</val_0>
+    <val_0>310.000000</val_0>
 </BL_Y>
 <BTHRESHOLD>
-    <val_0>35.000000</val_0>
+    <val_0>165.000000</val_0>
 </BTHRESHOLD>
 <PROJX>
     <val_0>1890.000000</val_0>
 </PROJX>
 <PROJY>
-    <val_0>180.000000</val_0>
+    <val_0>162.000000</val_0>
 </PROJY>
 <PROJSCALE>
     <val_0>0.484308</val_0>
 </PROJSCALE>
 <MAXBGDIFF>
-    <val_0>58.000000</val_0>
+    <val_0>73.000000</val_0>
 </MAXBGDIFF>
 <PICTURETIME>
     <val_0>25.000000</val_0>
@@ -77,13 +77,13 @@
     <val_0>3.000000</val_0>
 </BVAL>
 <RH>
-    <val_0>0.000000</val_0>
+    <val_0>4.000000</val_0>
 </RH>
 <RS>
-    <val_0>188.000000</val_0>
+    <val_0>211.000000</val_0>
 </RS>
 <RV>
-    <val_0>183.000000</val_0>
+    <val_0>187.000000</val_0>
 </RV>
 <GH>
     <val_0>91.000000</val_0>
@@ -95,16 +95,16 @@
     <val_0>128.000000</val_0>
 </GV>
 <BH>
-    <val_0>113.000000</val_0>
+    <val_0>111.000000</val_0>
 </BH>
 <BS>
-    <val_0>253.000000</val_0>
+    <val_0>250.000000</val_0>
 </BS>
 <BV>
-    <val_0>163.000000</val_0>
+    <val_0>161.000000</val_0>
 </BV>
 <INKREFUND>
-    <val_0>2527.000000</val_0>
+    <val_0>175.000000</val_0>
 </INKREFUND>
 <HUDX>
     <val_0>350.000000</val_0>
@@ -119,26 +119,26 @@
     <val_0>16.000000</val_0>
 </RHUERANGE>
 <RSATRANGE>
-    <val_0>81.000000</val_0>
+    <val_0>52.000000</val_0>
 </RSATRANGE>
 <RVALRANGE>
-    <val_0>55.000000</val_0>
+    <val_0>24.000000</val_0>
 </RVALRANGE>
 <GHUERANGE>
     <val_0>11.000000</val_0>
 </GHUERANGE>
 <GSATRANGE>
-    <val_0>67.000000</val_0>
+    <val_0>66.000000</val_0>
 </GSATRANGE>
 <GVALRANGE>
-    <val_0>55.250000</val_0>
+    <val_0>45.000000</val_0>
 </GVALRANGE>
 <BHUERANGE>
-    <val_0>14.000000</val_0>
+    <val_0>12.000000</val_0>
 </BHUERANGE>
 <BSATRANGE>
-    <val_0>68.000000</val_0>
+    <val_0>46.000000</val_0>
 </BSATRANGE>
 <BVALRANGE>
-    <val_0>31.000000</val_0>
+    <val_0>35.000000</val_0>
 </BVALRANGE>

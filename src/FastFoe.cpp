@@ -16,6 +16,7 @@ void FastFoe::typeSetup(int level){
 
 
 //------------------------------------------------------------
+/*
 void FastFoe::draw(){
     ofFill();
     
@@ -78,3 +79,4 @@ void FastFoe::draw(){
     ofPopMatrix();
     
 }
+*/

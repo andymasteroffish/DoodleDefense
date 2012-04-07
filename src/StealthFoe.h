@@ -17,7 +17,7 @@ class StealthFoe : public Foe{
 public:
     
     void typeSetup(int level);
-    void draw();
+    //void draw();
     void findPath();
     
 };

@@ -6,7 +6,6 @@
 //  Copyright (c) 2011 AndyMakes. All rights reserved.
 //
 
-#include <iostream>
 //
 //  NormFoe.cpp
 //  opencvExample
@@ -14,6 +13,7 @@
 //  Created by Andy Wallace on 12/5/11.
 //  Copyright (c) 2011 AndyMakes. All rights reserved.
 //
+
 
 #include "StealthFoe.h"
 
@@ -25,6 +25,7 @@ void StealthFoe::typeSetup(int level){
 
 
 //------------------------------------------------------------
+/*
 void StealthFoe::draw(){
     ofFill();
     
@@ -80,6 +81,7 @@ void StealthFoe::draw(){
     ofEndShape(false);
     
 }
+  */
 
 //------------------------------------------------------------
 //attempt to find a path

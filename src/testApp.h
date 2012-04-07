@@ -93,6 +93,8 @@ public:
     ofxCvColorImage			colorImg;
     ofxCvColorImage         colorImgMedium;
     ofxCvColorImage			hsvImg;
+    
+    ofxCvGrayscaleImage		greyImg;
 	
     ofxCvGrayscaleImage		hueImg;
     ofxCvGrayscaleImage		satImg;
@@ -143,6 +145,7 @@ public:
     unsigned char *			wallPixels;
     //when the screen is sucessfully redrawn, we want to keep track of what it looks like to compare between draws
     ofxCvGrayscaleImage 	lastSafeWallImage; 
+    ofxCvGrayscaleImage     wallDiffImage;
     
     
     //images to display as the boarders
@@ -196,6 +199,10 @@ public:
     int numEntrances;           //how many entrance are being used
     //pics for the foes (outline and fill)
     ofImage normFoePic[2]; 
+    ofImage fastFoePic[2]; 
+    ofImage heavyFoePic[2]; 
+    ofImage stealthFoePic[2]; 
+    ofImage immuneRedFoePic[2]; 
     
     
     bool showAllInfo;   //shows all of the bullshit lines and data
@@ -208,6 +215,9 @@ public:
     vector <TowerInfo> lastSafeTowerSet;  //all the locaitons of the towers when no problem was encounterred
     int towerID;    //goes up each time a tower is made so they each have a unique ID number
     float towerRefund;  //percentage of the value of the tower that the user gets back if they erase one
+    
+    //getting ink back when a wall is erased
+    float wallRefund;
     
     //vector to hold the bomb animations
     vector<BombAnimation> bombAnimations;

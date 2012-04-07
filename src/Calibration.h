@@ -129,6 +129,7 @@ public:
     //black threshold
     ofxCvGrayscaleImage *	wallImg;  
     ofxCvGrayscaleImage * blackImg;
+    ofxCvGrayscaleImage * greyImg;
     int blackThreshSliderX;
     int blackThreshSliderY;
     int blackThreshSliderMinX;

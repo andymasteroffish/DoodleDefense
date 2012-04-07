@@ -1,4 +1,9 @@
 new 1
+dur 400
+add norm 75
+mes Start drawing
+
+new 1
 dur 40
 add norm 15
 mes Start drawing

@@ -123,6 +123,7 @@ void testApp::setup(){
     
     //set the small image
     colorImgMedium.allocate(fieldW*2, fieldH*2);
+    greyImg.allocate(colorImgMedium.width, colorImgMedium.height);
 	
     //make all of the other images the same size
     hsvImg.allocate(colorImgMedium.width, colorImgMedium.height);
@@ -165,6 +166,7 @@ void testApp::setup(){
     wallPixels = new unsigned char [fieldW * fieldH];
     wallImage.allocate(fieldW, fieldH);
     lastSafeWallImage.allocate(fieldW, fieldH);
+    wallDiffImage.allocate(fieldW, fieldH);
     
     //set the maze border
     mazeTop=10;
@@ -179,9 +181,18 @@ void testApp::setup(){
     //foe images
     normFoePic[0].loadImage("foePics/normaloutline.png");
     normFoePic[1].loadImage("foePics/normalfill.png");
+    fastFoePic[0].loadImage("foePics/fastoutline.png");
+    fastFoePic[1].loadImage("foePics/fastfill.png");
+    heavyFoePic[0].loadImage("foePics/heavyoutline.png");
+    heavyFoePic[1].loadImage("foePics/heavyfill.png");
+    stealthFoePic[0].loadImage("foePics/stealthoutline.png");
+    stealthFoePic[1].loadImage("foePics/stealthfill.png");
+    immuneRedFoePic[0].loadImage("foePics/immunetoredoutline.png");
+    immuneRedFoePic[1].loadImage("foePics/immunetoredfill.png");
     
-    //towers
+    //getting ink back when towers and walls are erased
     towerRefund=0.7;    //what percentage of the tower's value a player gets back when they kill one
+    wallRefund=0.85;
     
     //start wall pixels off blank
     for (int i=0; i<fieldW*fieldH; i++)
@@ -217,6 +228,7 @@ void testApp::setup(){
     calibration.briImg = &briImg;
     calibration.blackImg = &blackImg;
     calibration.wallImg = &wallImage;
+    calibration.greyImg = &greyImg;
     calibration.changeImgSmall = &changeImgSmall;
     calibration.changeBackground = &changeBackground;
     calibration.changeBackgroundDiff = &changeBackgroundDiff;
@@ -462,9 +474,9 @@ void testApp::update(){
         }
         
         //if the game was paused because a foes didn't have a path, unpause if the way is clear now
-        if (allFoesHavePath && noPath){
-            noPath=false;
-        }
+//        if (allFoesHavePath && noPath){
+//            noPath=false;
+//        }
         
         //update the towers
         for (int i=0; i<towers.size(); i++){
@@ -680,6 +692,7 @@ void testApp::updateVideo(){
             //colorImg.setFromPixels(video.getPixels(), video.width, video.height);
             //warp into the small image based on the warp points
             colorImgMedium.warpIntoMe(colorImg, warpPoints, endPoints);
+            greyImg=colorImgMedium;
             
             
             hsvImg = colorImgMedium;
@@ -712,9 +725,13 @@ void testApp::updateVideo(){
                 colorImgs[i].setFromPixels(colorPixels[i], colorImgMedium.width, colorImgMedium.height);
             }
             
-            //threshold the sat image to get the black image (used for the walls)
-            blackImg.scaleIntoMe(satImg);
-            blackImg.threshold(blackThreshold,true);
+            //threshold the sat image to get the black image (used for the walls) IS WHAT I USED TO DO
+            //blackImg.scaleIntoMe(satImg);
+            //blackImg.threshold(blackThreshold,true);
+            
+            //theshold the greyscale image
+            blackImg.scaleIntoMe(greyImg);
+            blackImg.threshold(blackThreshold,false);
 		}
     }
     
@@ -784,7 +801,6 @@ void testApp::draw(){
     
     ofSetLineWidth(1);
     //panel.draw();
-    
 }
 
 //--------------------------------------------------------------
@@ -1014,6 +1030,7 @@ void testApp::keyPressed(int key){
             break;
             
         case ' ':
+            saveChangeBackground=true;
             takePictureTimer=takePictureTime;
             gameStarted= true;        //return to the game
             break;
@@ -1177,11 +1194,16 @@ void testApp::convertDrawingToGame(){
             //pause the game if this foe can't reach the end
             if (!foes[i]->pathFound){
                 noPath=true;
+                cout<<"NO PATH. GET OUT"<<endl;
+                return;
             }
             //you could also, create a temp foe at the end, and check to see if it can make it to the start
             
         }
     }
+    
+    //if we got this far, there is a path
+    noPath=false;
     
     VF.clear();
     //add some repulsion from each wall
@@ -1263,19 +1285,38 @@ void testApp::convertDrawingToGame(){
     //if there is nothing wrong, the game is ready to continue
     //but we should check to see if any towers from the last safe game state were removed
     if (!tooMuchInk && !noPath){
+        cout<<"ITS GOOD"<<endl;
+        
         //check the current wall image against the last one to see if any big chunks of wall were erased
-        unsigned char * lastSafeWallPixels=lastSafeWallImage.getPixels();
-        //go thorugh and see how many pixels that had been black are no white
+        vector <int> wallEraseLocations;
+        wallDiffImage.absDiff(lastSafeWallImage, wallImage);
+        wallDiffImage.erode_3x3();  //try to remove some noise by expanding the black parts of the image
+        unsigned char * wallDiffPixels=wallDiffImage.getPixels();
+        //go thorugh and see how many pixels that had been black are now white
         int totalDiff=0;
+        //int spawnParticleFrequency= (1/blackInkValue)*wallRefund;
         for (int i=0; i<fieldW*fieldH; i++){
-            if (lastSafeWallPixels[i]==0 && wallPixels[i]==255)
+            if (wallDiffPixels[i]>128 && wallPixels[i]==255){
                 totalDiff++;
+                //spawn an ink particle every so often based on the number of pixels checked so far if the game has started
+                if (gameStarted){
+                    particle newInkParticle;
+                    int xPos= (i%fieldW)*fieldScale;
+                    int yPos= ( floor(i/fieldW) )*fieldScale;
+                    newInkParticle.setInitialCondition( xPos, yPos , ofRandom(-5,5),ofRandom(-5,5));
+                    inkParticles.push_back(newInkParticle);
+                }
+            }
         }
+        //remove from their total ink based on the total
+        if (gameStarted)
+            totalInk-= totalDiff/wallRefund;
         cout<<"total wall difference: "<<totalDiff<<endl;
+        cout<<"took Away: "<<totalDiff/wallRefund<<endl;
         
         
         
-        //go through the tower data from the last safe state and see if antyhign is missing
+        //go through the tower data from the last safe state and see if antyhing is missing
         for (int i=0; i<lastSafeTowerSet.size(); i++){
             bool found=false;   //assume the tower will not be found
             
@@ -1296,13 +1337,15 @@ void testApp::convertDrawingToGame(){
                 if (lastSafeTowerSet[i].type=="green") inkValue=gInkValue*lastSafeTowerSet[i].size;
                 if (lastSafeTowerSet[i].type=="blue") inkValue=bInkValue*lastSafeTowerSet[i].size;
                 
-                //remove that ink from the player's reserve
-                totalInk-=inkValue;
-                //and spawn ink particles equal to the refund they should get
-                for (int r=0; r<inkValue*towerRefund; r++){
-                    particle newInkParticle;
-                    newInkParticle.setInitialCondition(lastSafeTowerSet[i].pos.x,lastSafeTowerSet[i].pos.y,ofRandom(-5,5),ofRandom(-5,5));
-                    inkParticles.push_back(newInkParticle);
+                //remove that ink from the player's reserve if the game has been started
+                if (gameStarted){
+                    totalInk-=inkValue;
+                    //and spawn ink particles equal to the refund they should get
+                    for (int r=0; r<inkValue*towerRefund; r++){
+                        particle newInkParticle;
+                        newInkParticle.setInitialCondition(lastSafeTowerSet[i].pos.x,lastSafeTowerSet[i].pos.y,ofRandom(-5,5),ofRandom(-5,5));
+                        inkParticles.push_back(newInkParticle);
+                    }
                 }
                 
             }
@@ -1322,6 +1365,11 @@ void testApp::convertDrawingToGame(){
             newInfo.type=towers[i]->type;
             lastSafeTowerSet.push_back(newInfo);
         }
+    }
+    else{
+        cout<<"NO GOOD BAD BAD"<<endl;
+        if (tooMuchInk)    cout<<"TOO MUCH INK"<<endl;
+        if (noPath)        cout<<"NO PATH"<<endl;
     }
 }
 
@@ -1408,18 +1456,22 @@ void testApp::checkTowers(string type){
 void testApp::spawnFoe(string name, int level){ 
     if (name=="fast"){
         FastFoe * newFoe=new FastFoe;
+        newFoe->setPics(&fastFoePic[0], &fastFoePic[1]);
         foes.push_back(newFoe);
     }
     else if (name=="stealth"){
         StealthFoe * newFoe=new StealthFoe;
+        newFoe->setPics(&stealthFoePic[0], &stealthFoePic[1]);
         foes.push_back(newFoe);
     }
     else if (name=="immune_red"){
         ImmuneRedFoe * newFoe=new ImmuneRedFoe;
+        newFoe->setPics(&immuneRedFoePic[0], &immuneRedFoePic[1]);
         foes.push_back(newFoe);
     }
     else if (name=="heavy"){
         HeavyFoe * newFoe=new HeavyFoe;
+        newFoe->setPics(&heavyFoePic[0], &heavyFoePic[1]);
         foes.push_back(newFoe);
     }
     else {  //assume anything that didn't ahve one of the above names is a normal foe

@@ -18,6 +18,7 @@ void HeavyFoe::typeSetup(int level){
 
 
 //------------------------------------------------------------
+/*
 void HeavyFoe::draw(){
     ofFill();
     
@@ -82,3 +83,4 @@ void HeavyFoe::draw(){
     ofPopMatrix();
     
 }
+ */

@@ -327,6 +327,8 @@ void Calibration::draw(){
         //testing
         ofSetColor(255);
         blackImg->draw(500,500);
+        satImg->draw(500+blackImg->width, 500);
+        greyImg->draw(500+blackImg->width+satImg->width,500);
         
     }
     
