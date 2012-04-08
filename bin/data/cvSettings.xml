@@ -20,31 +20,31 @@
     <val_0>1.166667</val_0>
 </RECTSCALE>
 <TL_X>
-    <val_0>150.000000</val_0>
+    <val_0>134.000000</val_0>
 </TL_X>
 <TL_Y>
-    <val_0>107.000000</val_0>
+    <val_0>35.000000</val_0>
 </TL_Y>
 <TR_X>
-    <val_0>431.000000</val_0>
+    <val_0>474.000000</val_0>
 </TR_X>
 <TR_Y>
-    <val_0>95.000000</val_0>
+    <val_0>62.000000</val_0>
 </TR_Y>
 <BR_X>
-    <val_0>463.000000</val_0>
+    <val_0>529.000000</val_0>
 </BR_X>
 <BR_Y>
-    <val_0>304.000000</val_0>
+    <val_0>303.000000</val_0>
 </BR_Y>
 <BL_X>
-    <val_0>119.000000</val_0>
+    <val_0>93.000000</val_0>
 </BL_X>
 <BL_Y>
-    <val_0>310.000000</val_0>
+    <val_0>293.000000</val_0>
 </BL_Y>
 <BTHRESHOLD>
-    <val_0>165.000000</val_0>
+    <val_0>107.000000</val_0>
 </BTHRESHOLD>
 <PROJX>
     <val_0>1890.000000</val_0>
@@ -95,16 +95,16 @@
     <val_0>128.000000</val_0>
 </GV>
 <BH>
-    <val_0>111.000000</val_0>
+    <val_0>113.000000</val_0>
 </BH>
 <BS>
-    <val_0>250.000000</val_0>
+    <val_0>248.000000</val_0>
 </BS>
 <BV>
-    <val_0>161.000000</val_0>
+    <val_0>117.000000</val_0>
 </BV>
 <INKREFUND>
-    <val_0>175.000000</val_0>
+    <val_0>142.000000</val_0>
 </INKREFUND>
 <HUDX>
     <val_0>350.000000</val_0>
@@ -134,7 +134,7 @@
     <val_0>45.000000</val_0>
 </GVALRANGE>
 <BHUERANGE>
-    <val_0>12.000000</val_0>
+    <val_0>14.000000</val_0>
 </BHUERANGE>
 <BSATRANGE>
     <val_0>46.000000</val_0>

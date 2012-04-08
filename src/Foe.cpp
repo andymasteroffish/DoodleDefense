@@ -20,7 +20,7 @@ void Foe::setup(vectorField * _vf, float x, float y, float _goalX, float _goalY,
     //get read to handle movement
     moveParticle.setInitialCondition(0,0,0,0);
     moveParticle.bFixed=true;   //move particle is locked in place so that it only pulls the foe towards it
-    moveAtractionIncrease=0.01;
+    moveAtractionIncrease=0.02;//0.01;
     nextNodeRad=20;
     
     //set pathfinding distance values
@@ -39,13 +39,17 @@ void Foe::setup(vectorField * _vf, float x, float y, float _goalX, float _goalY,
     
     //default game vals
     fullHP=50+ 50*level;
-    speed=0.1;
+    speed=0.2;//0.1;
     inkVal=6;
     damageToPlayer=1;
     
     //set type specific game values that might change the above values
     typeSetup(level);
     hp=fullHP;  //give it the full HP set in typeSetup
+    
+    //turning the picture
+    displayAngle=0;
+    turnSpeed=0.1;
 }
 
 //------------------------------------------------------------
@@ -130,6 +134,10 @@ void Foe::update(){
     //test if the foes is dead
     if (hp<=0)  dead=true;
     
+    //move the display angle toward the direction the particle is moving
+    float angle=atan2(moveParticle.pos.y-p.pos.y, moveParticle.pos.x-p.pos.x);
+    displayAngle = (1-turnSpeed)*displayAngle + turnSpeed*angle;
+    
 }
 
 //------------------------------------------------------------
@@ -143,14 +151,10 @@ void Foe::standardDraw(){
         drawExplored();
     }
     
-    //get the angle the foe is facing
-    float angle=atan2(moveParticle.pos.y-p.pos.y, moveParticle.pos.x-p.pos.x);
-    
-    
     //draw the outline and the fill
     ofPushMatrix();
     ofTranslate(p.pos.x, p.pos.y);
-    ofRotate(ofRadToDeg(angle)-90); //the foes are drawn facing up, so they need to be rotated 90 degrees
+    ofRotate(ofRadToDeg(displayAngle)-90); //the foes are drawn facing up, so they need to be rotated 90 degrees
     //ofScale(0.15,0.15);
     
     //set the level of fill based on the health

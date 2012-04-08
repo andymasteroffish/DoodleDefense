@@ -11,8 +11,8 @@
 void FreezeTower::typeSetup(){
     range=size*3.5;           //small range
     
-    rechargeTime=40;        //moderate recharge
-    bulletAtraction=0.5;    //fast bullet
+    rechargeTime=20;        //moderate recharge
+    bulletAtraction=1;//0.5;    //fast bullet
     bulletDamage=0;         //no damage
     
     freezeTime=300;      //how long the foe stays frozen

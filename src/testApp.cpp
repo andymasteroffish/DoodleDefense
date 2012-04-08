@@ -7,7 +7,7 @@
 
 //--------------------------------------------------------------
 void testApp::setup(){
-    ofSetFrameRate(60);
+    ofSetFrameRate(30);
     ofBackground(255);
     
     fieldW=160;

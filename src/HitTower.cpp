@@ -12,7 +12,7 @@ void HitTower::typeSetup(){
     range=size*3.5;           //moderate range
     
     rechargeTime=1;         //fast recharge
-    bulletAtraction=0.5;    //fast bullet
+    bulletAtraction=1;//0.5;    //fast bullet
     bulletDamage=10;        //moderate damage
     
     type="red";

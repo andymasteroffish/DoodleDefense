@@ -12,7 +12,7 @@
 void HeavyFoe::typeSetup(int level){
     type="heavy";
     fullHP*=3;  //way more health than a normal foe
-    speed=0; //almost half the speed
+    speed*=0.3; //slow it down
     
 }
 

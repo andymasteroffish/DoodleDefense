@@ -11,8 +11,8 @@
 void BombTower::typeSetup(){
     range=size*4.5;           //large range
     
-    rechargeTime=120;         //slow recharge
-    bulletAtraction=0.3;    //slow bullet
+    rechargeTime=60;         //slow recharge
+    bulletAtraction=0.6;//0.3;    //slow bullet
     bulletDamage=30;        //huge damage
     
     type="green";

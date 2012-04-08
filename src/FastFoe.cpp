@@ -11,7 +11,7 @@
 //------------------------------------------------------------
 void FastFoe::typeSetup(int level){
     type="fast";
-    speed=0.2;
+    speed*=2;
 }
 
 

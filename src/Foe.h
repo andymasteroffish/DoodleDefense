@@ -82,6 +82,8 @@ public:
     //draw the foe
     ofImage * outlinePic;
     ofImage * fillPic;
+    float displayAngle;
+    float turnSpeed;    //percentage to zeno toward the current angle
     
 };
 
