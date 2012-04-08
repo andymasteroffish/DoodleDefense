@@ -256,7 +256,7 @@ void testApp::setup(){
     int skipTo=0;
     totalInk=getInkFromWaves(skipTo);
     curWave=skipTo;
-    numEntrances=2;
+    numEntrances=1;
     
     video.videoSettings();
 }
@@ -564,38 +564,40 @@ void testApp::update(){
         }
     }
     
-    /*
-    //check how much ink has been used
-    inkUsed= 0;  
-    
-    //check black pixels
-    for (int i=0; i<fieldW*fieldH; i++){
-        if (wallPixels[i]==0) inkUsed+=blackInkValue;
+    //normally we'd only check the ink levels when a picture is taken, but it is useful to have the data constatly when on the ink phase of calibration
+    //This is redundant, copy/pasted code
+    if (calibration.phase=="Ink"){
+        //check how much ink has been used
+        inkUsed= 0;  
+        
+        //check black pixels
+        for (int i=0; i<fieldW*fieldH; i++){
+            if (wallPixels[i]==0) inkUsed+=blackInkValue;
+        }
+        
+        //check towers
+        for (int i=0; i<towers.size(); i++){
+            if (towers[i]->type=="red") inkUsed+=rInkValue*towers[i]->size;
+            if (towers[i]->type=="green") inkUsed+=gInkValue*towers[i]->size;
+            if (towers[i]->type=="blue") inkUsed+=bInkValue*towers[i]->size;
+        }
+        
+        //let calibration know how much was used
+        calibration.inkUsedBeforeRefund=inkUsed;
+        
+        //factor in the refund
+        inkUsed-=inkRefund;
+        //make sure ink used is not negative
+        inkUsed=MAX(0,inkUsed);
+        
+        //check if they used more ink than they have
+        if (inkUsed>totalInk){
+            tooMuchInk=true;
+            return; //don't need to bother checking anything else
+        }else if (tooMuchInk){  //if they just fixed using too much ink, unpause the game
+            tooMuchInk=false;
+        }
     }
-    
-    //check towers
-    for (int i=0; i<towers.size(); i++){
-        if (towers[i]->type=="red") inkUsed+=rInkValue*towers[i]->size;
-        if (towers[i]->type=="green") inkUsed+=gInkValue*towers[i]->size;
-        if (towers[i]->type=="blue") inkUsed+=bInkValue*towers[i]->size;
-    }
-    
-    //let calibration know how much was used
-    calibration.inkUsedBeforeRefund=inkUsed;
-    
-    //factor in the refund
-    inkUsed-=inkRefund;
-    //make sure ink used is not negative
-    inkUsed=MAX(0,inkUsed);
-    
-    //check if they used more ink than they have
-    if (inkUsed>totalInk){
-        tooMuchInk=true;
-        return; //don't need to bother checking anything else
-    }else if (tooMuchInk){  //if they just fixed using too much ink, unpause the game
-        tooMuchInk=false;
-    }
-    */
 }
 
 //--------------------------------------------------------------
