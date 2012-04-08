@@ -20,7 +20,7 @@ void Foe::setup(vectorField * _vf, float x, float y, float _goalX, float _goalY,
     //get read to handle movement
     moveParticle.setInitialCondition(0,0,0,0);
     moveParticle.bFixed=true;   //move particle is locked in place so that it only pulls the foe towards it
-    moveAtractionIncrease=0.02;//0.01;
+    moveAtractionIncrease=0.02;
     nextNodeRad=20;
     
     //set pathfinding distance values
@@ -39,7 +39,7 @@ void Foe::setup(vectorField * _vf, float x, float y, float _goalX, float _goalY,
     
     //default game vals
     fullHP=50+ 50*level;
-    speed=0.2;//0.1;
+    speed=0.15;//0.1;
     inkVal=6;
     damageToPlayer=1;
     

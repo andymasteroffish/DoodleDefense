@@ -256,7 +256,7 @@ void testApp::setup(){
     int skipTo=0;
     totalInk=getInkFromWaves(skipTo);
     curWave=skipTo;
-    //numEntrances=2;
+    numEntrances=2;
     
     video.videoSettings();
 }
@@ -338,6 +338,7 @@ void testApp::reset(){
     score=0;
     tooMuchInk=false;
     numEntrances=1;
+    nextEntrance=0;
     
     damageFlashTimer=0;
     
@@ -1482,7 +1483,8 @@ void testApp::spawnFoe(string name, int level){
     }
     
     //give the foe all of the info it needs
-    int entrance=ofRandom(numEntrances);
+    int entrance=nextEntrance;
+    if (++nextEntrance >= numEntrances) nextEntrance=0;
     foes[foes.size()-1]->setup(&VF, startX[entrance], startY[entrance], goalX[entrance], goalY[entrance], fieldScale, fieldW, fieldH,level);
     foes[foes.size()-1]->wallPixels=wallPixels;
     foes[foes.size()-1]->showAllInfo=&showAllInfo;

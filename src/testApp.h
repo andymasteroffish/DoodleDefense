@@ -197,6 +197,7 @@ public:
     int startX[2], startY[2];   //multiple entrances
     int goalX[2], goalY[2];
     int numEntrances;           //how many entrance are being used
+    int nextEntrance;           //alternate which gate foes are coming out of if there are more than one
     //pics for the foes (outline and fill)
     ofImage normFoePic[2]; 
     ofImage fastFoePic[2]; 
