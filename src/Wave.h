@@ -19,6 +19,7 @@ public:
     //void setup();
     void addFoes(string name, int num);
     void setMessage(string text);
+    void setBoxColor(string colorId);
     void start();
     void update(bool paused, bool fastForward);
     void randomize();   //shuffles the order
@@ -41,6 +42,7 @@ public:
     
     //misc
     string message;
+    string boxColorID;
     
     
 };

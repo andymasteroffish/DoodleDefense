@@ -24,6 +24,27 @@ void Explosion::setup(ofVec2f _pos, ofImage * _pic){
     killMe=false;
     
 }
+
+//NOT BEING USED
+void Explosion::setupPuff(ofVec2f _pos, ofImage * _pic, float _angle){
+    pos=_pos;
+    pic=_pic;
+    
+    
+    scaleVal=0.5;
+    growSpeed=0.07;
+    
+    angle=_angle;
+    rotSpeed=0;
+    
+    alpha=255;
+    fadeSpeed=50;
+    
+    killMe=false;
+    
+}
+
+
 void Explosion::update(){
     scaleVal+=growSpeed;
     angle+=rotSpeed;
@@ -31,6 +52,8 @@ void Explosion::update(){
     
     if (alpha<0)    killMe=true;
 }
+
+
 void Explosion::draw(){
     
     

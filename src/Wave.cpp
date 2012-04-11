@@ -17,6 +17,8 @@ void Wave::setup (int _level){
     startTime=0;
     curTime=0;
     
+    boxColorID="none";
+    
     message="";
 }
 
@@ -37,9 +39,10 @@ void Wave::setMessage(string text){
       if (message[i]=='#')  
         message[i]='\n';
     }
-    
-    
-    
+}
+
+void Wave::setBoxColor(string colorId){
+    boxColorID=colorId;
 }
 
 void Wave::start(){

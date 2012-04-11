@@ -30,6 +30,8 @@
 #include "BombAnimation.h"
 
 #include "Wave.h"
+#include "WaveInfoBox.h"
+
 #include "Calibration.h"
 
 class testApp : public ofBaseApp{
@@ -237,6 +239,12 @@ public:
     bool waveComplete;
     float waveAnimationTime;
     float waveAnimationStart;
+    
+    //the boxes to show the details for each wave
+    vector <WaveInfoBox> waveInfoBoxes;
+    float waveInfoBottom;   //line where the boxes want to fall to
+    float waveInfoX;
+    float waveInfoDistToFadeOut;    //how far from the bottom the box can be before daing completely
     
     //calibrating the game
     Calibration calibration;

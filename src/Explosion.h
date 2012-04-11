@@ -15,6 +15,7 @@ class Explosion{
 public:
     
     void setup(ofVec2f _pos, ofImage * _pic);
+    void setupPuff(ofVec2f _pos, ofImage * _pic, float _angle); //NOT BEING USED
     void update();
     void draw();
     

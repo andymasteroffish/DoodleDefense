@@ -1,30 +1,41 @@
 new 1
-dur 400
-add norm 100
-mes TESTING
-
-new 1
-dur 40
+dur 50
 add norm 15
+col norm
 mes Start drawing
 
 new 1
-dur 60
+dur 50
 add norm 30
-add fast 9 
+col norm
+mes A bit faster#now
+
+new 1
+dur 60
+add fast 25
+col fast 
 mes Watch out for#fast invaders
 
 new 2
 dur 60
 add heavy 11
+col heavy
 mes Heavies take#more damage#to kill
 
 new 2
-dur 60
+dur 80
 add norm 30
+add fast 10
+col norm
 mes knock knock
 
-new 2
+new 3
+dur 30
+add stealth 15
+col stealth
+mes They can go#through walls?
+
+new 3
 dur 80
 add norm 30
 add fast 8
@@ -34,22 +45,16 @@ mes knock knock
 
 new 3
 dur 30
-add stealth 9
-add norm 22
+add immune_red 12
 rand
-mes They can go#through walls?
-
-new 3
-dur 30
-add norm 24
-add immune_red 10
-rand
+col immune
 mes Hope you don't#use too much red
 
 new 4
 dur 30
 add fast 20
 rand
+col fast
 mes 2 Fast 2 Furious#Tokyo Drift
 
 new 4

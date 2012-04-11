@@ -9,7 +9,7 @@
 #include "FreezeTower.h"
 
 void FreezeTower::typeSetup(){
-    range=size*3.5;           //small range
+    range=size*3.5;           //moderate range
     
     rechargeTime=20;        //moderate recharge
     bulletAtraction=1;//0.5;    //fast bullet

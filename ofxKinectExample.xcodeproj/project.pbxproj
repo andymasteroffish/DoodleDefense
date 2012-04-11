@@ -17,6 +17,7 @@
 		0A0B98641485F95F001D8405 /* tinyxmlparser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0A0B985E1485F95F001D8405 /* tinyxmlparser.cpp */; };
 		0A0B98651485F95F001D8405 /* ofxXmlSettings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0A0B98601485F95F001D8405 /* ofxXmlSettings.cpp */; };
 		0A15F1D21535E1BD000A2A85 /* Explosion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0A15F1D11535E1BD000A2A85 /* Explosion.cpp */; };
+		0A15F1D51535F2F6000A2A85 /* WaveInfoBox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0A15F1D41535F2F6000A2A85 /* WaveInfoBox.cpp */; };
 		0A9A34A01513D73D00FF4259 /* Calibration.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0A9A349F1513D73D00FF4259 /* Calibration.cpp */; };
 		0AA463FA149A6467007A570D /* BombAnimation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AA463F9149A6467007A570D /* BombAnimation.cpp */; };
 		0AB78C6A149132C8003777E8 /* BombTower.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AB78C55149132C8003777E8 /* BombTower.cpp */; };
@@ -136,6 +137,8 @@
 		0A0B98611485F95F001D8405 /* ofxXmlSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxXmlSettings.h; sourceTree = "<group>"; };
 		0A15F1D01535E1B2000A2A85 /* Explosion.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Explosion.h; sourceTree = "<group>"; };
 		0A15F1D11535E1BD000A2A85 /* Explosion.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Explosion.cpp; sourceTree = "<group>"; };
+		0A15F1D31535F2ED000A2A85 /* WaveInfoBox.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WaveInfoBox.h; sourceTree = "<group>"; };
+		0A15F1D41535F2F6000A2A85 /* WaveInfoBox.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WaveInfoBox.cpp; sourceTree = "<group>"; };
 		0A9A349E1513D72C00FF4259 /* Calibration.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Calibration.h; sourceTree = "<group>"; };
 		0A9A349F1513D73D00FF4259 /* Calibration.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Calibration.cpp; sourceTree = "<group>"; };
 		0AA463F8149A645F007A570D /* BombAnimation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BombAnimation.h; sourceTree = "<group>"; };
@@ -876,6 +879,8 @@
 				0A9A349F1513D73D00FF4259 /* Calibration.cpp */,
 				0A15F1D01535E1B2000A2A85 /* Explosion.h */,
 				0A15F1D11535E1BD000A2A85 /* Explosion.cpp */,
+				0A15F1D31535F2ED000A2A85 /* WaveInfoBox.h */,
+				0A15F1D41535F2F6000A2A85 /* WaveInfoBox.cpp */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -1013,6 +1018,7 @@
 				0AA463FA149A6467007A570D /* BombAnimation.cpp in Sources */,
 				0A9A34A01513D73D00FF4259 /* Calibration.cpp in Sources */,
 				0A15F1D21535E1BD000A2A85 /* Explosion.cpp in Sources */,
+				0A15F1D51535F2F6000A2A85 /* WaveInfoBox.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -113,6 +113,11 @@ void testApp::setup(){
     infoFontBig.loadFont(fontName, 75, true, true);
     infoFontHuge.loadFont(fontName, 100, true, true);
     
+    //displaying the wave info
+    waveInfoBottom=630;
+    waveInfoX=1400;
+    waveInfoDistToFadeOut=900;
+    
     //saving a picture of the board
     boardImg.allocate(fieldW*4,fieldH*4);
     savingBoardPicture=false;
@@ -319,12 +324,30 @@ void testApp::loadFromText(){
                 waves[waves.size()-1].setMessage(val);
             }
             
+            //set the color for the box
+            if (cmd=="col"){
+                waves[waves.size()-1].setBoxColor(val);
+            }
+            
             //randomize the wave
             if (cmd=="ran"){
                 waves[waves.size()-1].randomize();
             }
         }
 	}
+    
+    //set the wave info boxes
+    waveInfoBoxes.clear();  //get rid of any old ones
+    float waveInfoSpacing=10;
+    float boxWidth=400;
+    float boxHeight=300;
+    for (int i=0; i<waves.size(); i++){
+        WaveInfoBox newInfoBox;
+        
+        newInfoBox.setup(i+1, waves[i].message, &infoFont, &infoFontSmall, waves[i].boxColorID, waveInfoX, waveInfoBottom-i*(boxHeight+waveInfoSpacing), boxWidth, boxHeight);
+        newInfoBox.alpha=ofMap( waveInfoBottom-newInfoBox.pos.y, 0, waveInfoDistToFadeOut, 255, 0, true);
+        waveInfoBoxes.push_back(newInfoBox);
+    }
 }
 
 //--------------------------------------------------------------
@@ -577,6 +600,26 @@ void testApp::update(){
             explosions.erase(explosions.begin()+i);
     }
     
+    //update the wave info boxes if they need any changing
+    //fade out the bottom box if the level was just finished
+    if (waveInfoBoxes[0].fading){
+        waveInfoBoxes[0].alpha-=waveInfoBoxes[0].fadeSpeed;
+        //kill it if it is gone
+        if (waveInfoBoxes[0].alpha<=0){
+            waveInfoBoxes.erase(waveInfoBoxes.begin());
+        }
+    }
+    //if the bottom box is not on the bottom line, move them all down and adjust the a;hpa
+    if (waveInfoBoxes[0].pos.y<waveInfoBottom){
+        for (int i=0; i<waveInfoBoxes.size(); i++){
+            waveInfoBoxes[i].pos.y+=waveInfoBoxes[i].fallSpeed;
+            //make sure they don't go below the line
+            waveInfoBoxes[i].pos.y=MIN(waveInfoBottom, waveInfoBoxes[i].pos.y);
+            //set the alpha based on the distance to the bottom line
+            waveInfoBoxes[i].alpha=ofMap( waveInfoBottom-waveInfoBoxes[i].pos.y, 0, waveInfoDistToFadeOut, 255, 0, true);
+        }
+    }
+    
     //normally we'd only check the ink levels when a picture is taken, but it is useful to have the data constatly when on the ink phase of calibration
     //This is redundant, copy/pasted code
     if (calibration.phase=="Ink"){
@@ -611,6 +654,7 @@ void testApp::update(){
             tooMuchInk=false;
         }
     }
+    
 }
 
 //--------------------------------------------------------------
@@ -989,44 +1033,10 @@ void testApp::drawPlayerInfo(){
     inkTextY+=infoFontBig.getLineHeight();
     
     
-    //SHOW WAVE INFO
-    int waveTextX=1315;
-    int waveTextY=75;
-    
-    thisTextX=waveTextX-infoFont.stringWidth("Wave #")/2;
-    infoFont.drawString("Wave #",thisTextX,waveTextY);
-    
-    waveTextY+=infoFontHuge.getLineHeight()-60;
-    thisTextX=waveTextX-infoFontHuge.stringWidth(ofToString(curWave+1))/2;
-    infoFontHuge.drawString(ofToString(curWave+1),thisTextX,waveTextY);
-    
-    waveTextY+=120;
-    thisTextX=waveTextX-infoFont.stringWidth("Invader")/2;
-    infoFont.drawString("Invader",thisTextX,waveTextY);
-    waveTextY+=infoFont.getLineHeight();
-    thisTextX=waveTextX-infoFont.stringWidth("Level:")/2;
-    infoFont.drawString("Level:",thisTextX,waveTextY);
-    
-    waveTextY+=infoFontHuge.getLineHeight()-60;
-    thisTextX=waveTextX-infoFontHuge.stringWidth(ofToString(waves[curWave].level))/2;
-    infoFontHuge.drawString(ofToString(waves[curWave].level),thisTextX,waveTextY);
-    
-    waveTextY+=120;
-    thisTextX=waveTextX-infoFont.stringWidth("Invaders")/2;
-    infoFont.drawString("Invaders",thisTextX,waveTextY);
-    waveTextY+=infoFont.getLineHeight();
-    thisTextX=waveTextX-infoFont.stringWidth("Left:")/2;
-    infoFont.drawString("Left:",thisTextX,waveTextY);
-    
-    waveTextY+=infoFontHuge.getLineHeight()-60;
-    int numLeft=waves[curWave].foes.size()-waves[curWave].nextFoe;
-    if (waves[curWave].done)    numLeft=0;
-    thisTextX=waveTextX-infoFontBig.stringWidth(ofToString(numLeft))/2;
-    infoFontHuge.drawString(ofToString(numLeft),thisTextX,waveTextY);
-    
-    waveTextY+=150;
-    thisTextX=waveTextX-infoFontSmall.stringWidth(waves[curWave].message)/2 +20;
-    infoFontSmall.drawString(waves[curWave].message,thisTextX,waveTextY);
+    //draw the wave info boxes
+    for (int i=0; i<waveInfoBoxes.size(); i++){
+        waveInfoBoxes[i].draw();
+    }
     
 }
 
@@ -1602,6 +1612,12 @@ void testApp::startNextWave(){
 void testApp::endWave(){
     waveComplete=true;
     waveAnimationStart=ofGetElapsedTimef();
+    
+    //remove the box for this wave. Checking all boxes just in case somehting weird hapenned
+    for (int i=0; i<waveInfoBoxes.size(); i++){
+        if (waveInfoBoxes[i].waveNum== curWave+1)
+            waveInfoBoxes[i].fading=true;
+    }
 }
 
 //--------------------------------------------------------------
