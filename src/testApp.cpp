@@ -179,16 +179,21 @@ void testApp::setup(){
     borderPics[1].loadImage("walls2Entrance.png");
     
     //foe images
-    normFoePic[0].loadImage("foePics/normaloutline.png");
-    normFoePic[1].loadImage("foePics/normalfill.png");
-    fastFoePic[0].loadImage("foePics/fastoutline.png");
-    fastFoePic[1].loadImage("foePics/fastfill.png");
-    heavyFoePic[0].loadImage("foePics/heavyoutline.png");
-    heavyFoePic[1].loadImage("foePics/heavyfill.png");
-    stealthFoePic[0].loadImage("foePics/stealthoutline.png");
-    stealthFoePic[1].loadImage("foePics/stealthfill.png");
-    immuneRedFoePic[0].loadImage("foePics/immunetoredoutline.png");
-    immuneRedFoePic[1].loadImage("foePics/immunetoredfill.png");
+    for (int i=0; i<NUM_FOE_FRAMES; i++){
+        normFoePic[0][i].loadImage("foePics/normal/normal"+ofToString(i+1)+".png");
+        normFoePic[1][i].loadImage("foePics/normal/nfill"+ofToString(i+1)+".png");
+        fastFoePic[0][i].loadImage("foePics/fast/fast"+ofToString(i+1)+".png");
+        fastFoePic[1][i].loadImage("foePics/fast/ffill"+ofToString(i+1)+".png");
+        heavyFoePic[0][i].loadImage("foePics/heavy/heavy"+ofToString(i+1)+".png");
+        heavyFoePic[1][i].loadImage("foePics/heavy/hfill"+ofToString(i+1)+".png");
+        stealthFoePic[0][i].loadImage("foePics/stealth/stealth"+ofToString(i+1)+".png");
+        stealthFoePic[1][i].loadImage("foePics/stealth/sfill"+ofToString(i+1)+".png");
+        immuneRedFoePic[0][i].loadImage("foePics/immune/immune"+ofToString(i+1)+".png");
+        immuneRedFoePic[1][i].loadImage("foePics/immune/ifill"+ofToString(i+1)+".png");
+    }
+    
+    //explosion and puff images
+    explosionPic.loadImage("misc/explosionFill.png");
     
     //getting ink back when towers and walls are erased
     towerRefund=0.7;    //what percentage of the tower's value a player gets back when they kill one
@@ -564,6 +569,14 @@ void testApp::update(){
         }
     }
     
+    //update explosions and puffs
+    for (int i=explosions.size()-1; i>=0; i--){
+        explosions[i].update();
+        
+        if (explosions[i].killMe)
+            explosions.erase(explosions.begin()+i);
+    }
+    
     //normally we'd only check the ink levels when a picture is taken, but it is useful to have the data constatly when on the ink phase of calibration
     //This is redundant, copy/pasted code
     if (calibration.phase=="Ink"){
@@ -842,6 +855,10 @@ void testApp::drawGame(){
     ofFill();
     for (int i=0; i<bombAnimations.size(); i++)
          bombAnimations[i].draw();
+    
+    //draw explosions and puffs
+    for (int i=0; i<explosions.size(); i++)
+        explosions[i].draw();
     
     //draw ink particles if there are any
     ofSetColor(150);
@@ -1459,27 +1476,27 @@ void testApp::checkTowers(string type){
 void testApp::spawnFoe(string name, int level){ 
     if (name=="fast"){
         FastFoe * newFoe=new FastFoe;
-        newFoe->setPics(&fastFoePic[0], &fastFoePic[1]);
+        newFoe->setPics(fastFoePic[0], fastFoePic[1]);
         foes.push_back(newFoe);
     }
     else if (name=="stealth"){
         StealthFoe * newFoe=new StealthFoe;
-        newFoe->setPics(&stealthFoePic[0], &stealthFoePic[1]);
+        newFoe->setPics(stealthFoePic[0], stealthFoePic[1]);
         foes.push_back(newFoe);
     }
     else if (name=="immune_red"){
         ImmuneRedFoe * newFoe=new ImmuneRedFoe;
-        newFoe->setPics(&immuneRedFoePic[0], &immuneRedFoePic[1]);
+        newFoe->setPics(immuneRedFoePic[0], immuneRedFoePic[1]);
         foes.push_back(newFoe);
     }
     else if (name=="heavy"){
         HeavyFoe * newFoe=new HeavyFoe;
-        newFoe->setPics(&heavyFoePic[0], &heavyFoePic[1]);
+        newFoe->setPics(heavyFoePic[0], heavyFoePic[1]);
         foes.push_back(newFoe);
     }
     else {  //assume anything that didn't ahve one of the above names is a normal foe
         NormFoe * newFoe=new NormFoe;
-        newFoe->setPics(&normFoePic[0], &normFoePic[1]);
+        newFoe->setPics(normFoePic[0], normFoePic[1]);
         //add it to the vector
         foes.push_back(newFoe);
     }
@@ -1502,6 +1519,11 @@ void testApp::spawnFoe(string name, int level){
 
 //--------------------------------------------------------------
 void testApp::killFoe(int num){
+    //spawn an explosion
+    Explosion newExplosion;
+    newExplosion.setup(foes[num]->p.pos, &explosionPic);
+    explosions.push_back(newExplosion);
+    
     //go through and find any towers targetting this foe and remove the target
     for (int i=0; i<towers.size(); i++){
         if (towers[i]->target==foes[num]){

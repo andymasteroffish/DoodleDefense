@@ -47,15 +47,22 @@ void Foe::setup(vectorField * _vf, float x, float y, float _goalX, float _goalY,
     typeSetup(level);
     hp=fullHP;  //give it the full HP set in typeSetup
     
+    //setting how to move through the images
+    curPicFrame=0;
+    timeBetweenFrames=0.1;  //how many seconds to wait between frames
+    nextFrameTime=ofGetElapsedTimef()+timeBetweenFrames;
+    
     //turning the picture
     displayAngle=0;
     turnSpeed=0.1;
 }
 
 //------------------------------------------------------------
-void Foe::setPics(ofImage * _outline, ofImage * _fill){
-    outlinePic=_outline;
-    fillPic=_fill;
+void Foe::setPics(ofImage stroke[], ofImage fill[]){
+    for (int i=0; i<NUM_FOE_FRAMES; i++){
+        picStroke[i]=&stroke[i];
+        picFill[i]=&fill[i];
+    }
 }
 
 //------------------------------------------------------------
@@ -138,6 +145,14 @@ void Foe::update(){
     float angle=atan2(moveParticle.pos.y-p.pos.y, moveParticle.pos.x-p.pos.x);
     displayAngle = (1-turnSpeed)*displayAngle + turnSpeed*angle;
     
+    //set which frame to display if enough time has passed to change the frame
+    if (ofGetElapsedTimef()>nextFrameTime){
+        nextFrameTime=ofGetElapsedTimef()+timeBetweenFrames;
+        //advance the frame, wrapping it around if it reached the end
+        curPicFrame= (curPicFrame+1)%NUM_FOE_FRAMES;
+        
+    }
+    
 }
 
 //------------------------------------------------------------
@@ -159,9 +174,9 @@ void Foe::standardDraw(){
     
     //set the level of fill based on the health
     ofSetColor(255,255,255, ofMap(hp, 0,fullHP, 0,255) );
-    fillPic->draw(0,0);
+    picFill[curPicFrame]->draw(0,0);
     ofSetColor(255);
-    outlinePic->draw(0,0);
+    picStroke[curPicFrame]->draw(0,0);
     ofPopMatrix();
     
     

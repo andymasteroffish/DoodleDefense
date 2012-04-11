@@ -20,7 +20,7 @@ class Foe{
 public:
     
     void setup(vectorField * _vf, float x, float y, float goalX, float goalY, float _fieldScale, int _fieldW, int _fieldH, int level);
-    void setPics(ofImage * _outline, ofImage * _fill);
+    void setPics(ofImage stroke[], ofImage fill[]);
     virtual void typeSetup(int level){}
     void update();
     virtual void draw(){ standardDraw(); }
@@ -80,8 +80,12 @@ public:
     
     
     //draw the foe
-    ofImage * outlinePic;
-    ofImage * fillPic;
+    #define NUM_FOE_FRAMES 5
+    ofImage * picStroke[NUM_FOE_FRAMES];
+    ofImage * picFill[NUM_FOE_FRAMES];
+    int curPicFrame;
+    float timeBetweenFrames;
+    float nextFrameTime;
     float displayAngle;
     float turnSpeed;    //percentage to zeno toward the current angle
     

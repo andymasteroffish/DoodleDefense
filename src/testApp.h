@@ -20,6 +20,8 @@
 #include "ImmuneRedFoe.h"
 #include "HeavyFoe.h"
 
+#include "Explosion.h"
+
 #include "Tower.h"
 #include "HitTower.h"
 #include "FreezeTower.h"
@@ -199,11 +201,16 @@ public:
     int numEntrances;           //how many entrance are being used
     int nextEntrance;           //alternate which gate foes are coming out of if there are more than one
     //pics for the foes (outline and fill)
-    ofImage normFoePic[2]; 
-    ofImage fastFoePic[2]; 
-    ofImage heavyFoePic[2]; 
-    ofImage stealthFoePic[2]; 
-    ofImage immuneRedFoePic[2]; 
+    #define NUM_FOE_FRAMES 5
+    ofImage normFoePic[2][NUM_FOE_FRAMES]; 
+    ofImage fastFoePic[2][NUM_FOE_FRAMES]; 
+    ofImage heavyFoePic[2][NUM_FOE_FRAMES]; 
+    ofImage stealthFoePic[2][NUM_FOE_FRAMES]; 
+    ofImage immuneRedFoePic[2][NUM_FOE_FRAMES]; 
+    
+    //explosions and poofs from hitting foes
+    ofImage explosionPic;
+    vector <Explosion> explosions;
     
     
     bool showAllInfo;   //shows all of the bullshit lines and data
