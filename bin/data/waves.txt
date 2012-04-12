@@ -11,14 +11,14 @@ col norm
 mes A bit faster#now
 
 new 1
-dur 60
+dur 30
 add fast 25
 col fast 
 mes Watch out for#fast invaders
 
 new 2
 dur 60
-add heavy 11
+add heavy 15
 col heavy
 mes Heavies take#more damage#to kill
 
@@ -30,7 +30,7 @@ col norm
 mes knock knock
 
 new 3
-dur 30
+dur 45
 add stealth 15
 col stealth
 mes They can go#through walls?
@@ -41,23 +41,23 @@ add norm 30
 add fast 8
 add heavy 8
 rand
-mes knock knock
+mes Medley
 
 new 3
 dur 30
 add immune_red 12
 rand
 col immune
-mes Hope you don't#use too much red
+mes Hope you don't#use too much#red
 
-new 4
+new 5
 dur 30
 add fast 20
 rand
 col fast
-mes 2 Fast 2 Furious#Tokyo Drift
+mes 2 Fast#2 Furious#Tokyo Drift
 
-new 4
+new 5
 dur 60
 add norm 20
 add immune_red 10
@@ -67,7 +67,7 @@ add stealth 8
 rand
 mes Why won't#you die?
 
-new 5
+new 6
 dur 60
 add norm 30
 add immune_red 13
@@ -77,12 +77,13 @@ add stealth 10
 rand
 mes Start praying
 
-new 1
+new 8
 dur 60
-add norm 10
-add immune_red 10
-add heavy 10
-add fast 10
+add norm 30
+add immune_red 13
+add heavy 13
+add fast 13
 add stealth 10
 rand
-mes TESTING
+mes Keep praying
+
