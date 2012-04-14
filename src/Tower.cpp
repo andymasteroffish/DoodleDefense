@@ -56,7 +56,7 @@ void Tower::update(){
             
             //if we have a target already, check if it is still in range
             bool needsNewTarget=true;   //assume we will need a new atrget
-            if (target!=NULL){
+            if (target!=NULL && type!="blue"){
                 if ( pos.distance(target->p.pos) < range +rangePadding ){
                     needsNewTarget=false;
                     //shoot at it!
@@ -110,6 +110,8 @@ void Tower::fire(Foe * _target){
     readyToShoot=false;
     
     bullet.setInitialCondition(pos.x,pos.y,diff.x, diff.y);
+    
+    SM->playSound("shoot");  //play the sound
     
 }
 

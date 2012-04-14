@@ -175,7 +175,8 @@ void Foe::standardDraw(){
     //set the level of fill based on the health
     ofSetColor(255,255,255, ofMap(hp, 0,fullHP, 0,255) );
     picFill[curPicFrame]->draw(0,0);
-    ofSetColor(255);
+    ofSetColor(0);
+    if (freezeTimer>0)  ofSetColor(12,61,168);
     picStroke[curPicFrame]->draw(0,0);
     ofPopMatrix();
     

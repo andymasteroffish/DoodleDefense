@@ -17,7 +17,7 @@ void BombTower::typeSetup(){
     
     type="green";
     
-    blastRadius=size*3.5;
+    blastRadius=size*4;
 }
 
 void BombTower::draw(){
@@ -39,5 +39,6 @@ void BombTower::draw(){
 void BombTower::hitTarget(){
     shooting=false;
     bombHit=true;
-    
+    //play the sound
+    SM->playSound("bomb");
 }

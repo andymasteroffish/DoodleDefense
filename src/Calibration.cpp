@@ -325,10 +325,10 @@ void Calibration::draw(){
         font.drawString("Current ink level: "+ofToString(displayValue), 200, inkRefundButton.y-50);
         
         //testing
-        ofSetColor(255);
-        blackImg->draw(500,500);
-        satImg->draw(500+blackImg->width, 500);
-        greyImg->draw(500+blackImg->width+satImg->width,500);
+//        ofSetColor(255);
+//        blackImg->draw(500,500);
+//        satImg->draw(500+blackImg->width, 500);
+//        greyImg->draw(500+blackImg->width+satImg->width,500);
         
     }
     
@@ -396,6 +396,7 @@ void Calibration::draw(){
         string otherInfo="If the game is not pausing when the player is drawing,\ncheck the camera tab.\n\n";
         otherInfo+="Press P to pause the game.\n";
         otherInfo+="Press F to fast forward.\n";
+        otherInfo+="Press V to open video prefrences.\n";
         otherInfo+="Press ENTER to reset the game.\n";
         otherInfo+="Press SPACE to take a new image of the board.\n";
         font.drawString(otherInfo, 100, 700);

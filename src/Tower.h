@@ -12,6 +12,7 @@
 #include "ofMain.h"
 #include "particle.h"
 #include "Foe.h"
+#include "SoundManager.h"
 
 class Tower{
 public:
@@ -27,6 +28,8 @@ public:
     
     bool * showAllInfo;   //shows all of the bullshit lines and data Points to the one in test app
     bool * paused;        //is the game paused. points to the bool in test app
+    
+    SoundManager * SM;
     
     bool playerDead;
     

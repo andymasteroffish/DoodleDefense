@@ -32,6 +32,7 @@
 #include "Wave.h"
 #include "WaveInfoBox.h"
 
+#include "SoundManager.h"
 #include "Calibration.h"
 
 class testApp : public ofBaseApp{
@@ -214,6 +215,9 @@ public:
     ofImage explosionPic;
     vector <Explosion> explosions;
     
+    //banners
+    ofImage banners[5];
+    ofImage titlePic;
     
     bool showAllInfo;   //shows all of the bullshit lines and data
     
@@ -249,6 +253,9 @@ public:
     //calibrating the game
     Calibration calibration;
     float screenScale;  //shrink the calibration for smaller resolutions
+    
+    //sounds
+    SoundManager SM;
     
     
     //fonts

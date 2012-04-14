@@ -14,7 +14,7 @@ void testApp::setup(){
     fieldH=120;
     
     healthStart=15;
-    startInk=450;
+    startInk=500;
     
     waveAnimationTime=5;    //flash for x seconds when a wave is finished
     
@@ -185,13 +185,13 @@ void testApp::setup(){
     
     //foe images
     for (int i=0; i<NUM_FOE_FRAMES; i++){
-        normFoePic[0][i].loadImage("foePics/normal/normal"+ofToString(i+1)+".png");
+        normFoePic[0][i].loadImage("foePics/normal/wnormal"+ofToString(i+1)+".png");
         normFoePic[1][i].loadImage("foePics/normal/nfill"+ofToString(i+1)+".png");
-        fastFoePic[0][i].loadImage("foePics/fast/fast"+ofToString(i+1)+".png");
+        fastFoePic[0][i].loadImage("foePics/fast/wfast"+ofToString(i+1)+".png");
         fastFoePic[1][i].loadImage("foePics/fast/ffill"+ofToString(i+1)+".png");
         heavyFoePic[0][i].loadImage("foePics/heavy/heavy"+ofToString(i+1)+".png");
         heavyFoePic[1][i].loadImage("foePics/heavy/hfill"+ofToString(i+1)+".png");
-        stealthFoePic[0][i].loadImage("foePics/stealth/stealth"+ofToString(i+1)+".png");
+        stealthFoePic[0][i].loadImage("foePics/stealth/wstealth"+ofToString(i+1)+".png");
         stealthFoePic[1][i].loadImage("foePics/stealth/sfill"+ofToString(i+1)+".png");
         immuneRedFoePic[0][i].loadImage("foePics/immune/immune"+ofToString(i+1)+".png");
         immuneRedFoePic[1][i].loadImage("foePics/immune/ifill"+ofToString(i+1)+".png");
@@ -199,6 +199,15 @@ void testApp::setup(){
     
     //explosion and puff images
     explosionPic.loadImage("misc/explosionFill.png");
+    
+    //banners
+    banners[0].loadImage("banners/nopath.png");
+    banners[1].loadImage("banners/outofink.png");
+    banners[2].loadImage("banners/wave.png");
+    banners[3].loadImage("banners/youwin.png");
+    banners[4].loadImage("banners/youlose.png");
+    
+    titlePic.loadImage("banners/title.png");
     
     //getting ink back when towers and walls are erased
     towerRefund=0.7;    //what percentage of the tower's value a player gets back when they kill one
@@ -223,6 +232,14 @@ void testApp::setup(){
     goalY[0]=fieldH*fieldScale/2+25;
     goalX[1]=fieldW*fieldScale/2+25;
     goalY[1]=fieldH*fieldScale-10;
+    
+    //load the sounds
+    SM.setup();
+    SM.loadSound("audio/BOMB.wav", "bomb", 1);
+    SM.loadSound("audio/ERROR.wav", "error", 1);
+    SM.loadSound("audio/FREEZE.wav", "freeze", 0.3);
+    SM.loadSound("audio/HIT.wav", "hit", 0.4);
+    SM.loadSound("audio/SHOT.wav", "shoot", 0.6);
     
     
     //setup calibration with pointers to everything it needs
@@ -269,6 +286,7 @@ void testApp::setup(){
     numEntrances=1;
     
     video.videoSettings();
+    
 }
 
 
@@ -540,8 +558,9 @@ void testApp::update(){
                     }
                 }
                 
-                if (closestID!=-1)
-                     towers[i]->fire(foes[closestID]);
+                if (closestID!=-1){
+                    towers[i]->fire(foes[closestID]);
+                }
                 
             }
             
@@ -602,21 +621,25 @@ void testApp::update(){
     
     //update the wave info boxes if they need any changing
     //fade out the bottom box if the level was just finished
-    if (waveInfoBoxes[0].fading){
-        waveInfoBoxes[0].alpha-=waveInfoBoxes[0].fadeSpeed;
-        //kill it if it is gone
-        if (waveInfoBoxes[0].alpha<=0){
-            waveInfoBoxes.erase(waveInfoBoxes.begin());
+    if (waveInfoBoxes.size()>0){
+        if (waveInfoBoxes[0].fading){
+            waveInfoBoxes[0].alpha-=waveInfoBoxes[0].fadeSpeed;
+            //kill it if it is gone
+            if (waveInfoBoxes[0].alpha<=0){
+                waveInfoBoxes.erase(waveInfoBoxes.begin());
+            }
         }
     }
-    //if the bottom box is not on the bottom line, move them all down and adjust the a;hpa
-    if (waveInfoBoxes[0].pos.y<waveInfoBottom){
-        for (int i=0; i<waveInfoBoxes.size(); i++){
-            waveInfoBoxes[i].pos.y+=waveInfoBoxes[i].fallSpeed;
-            //make sure they don't go below the line
-            waveInfoBoxes[i].pos.y=MIN(waveInfoBottom, waveInfoBoxes[i].pos.y);
-            //set the alpha based on the distance to the bottom line
-            waveInfoBoxes[i].alpha=ofMap( waveInfoBottom-waveInfoBoxes[i].pos.y, 0, waveInfoDistToFadeOut, 255, 0, true);
+    //if the bottom box is not on the bottom line, move them all down and adjust the alhpa
+    if (waveInfoBoxes.size()>0){    //make sure there is somehting there
+        if (waveInfoBoxes[0].pos.y<waveInfoBottom){
+            for (int i=0; i<waveInfoBoxes.size(); i++){
+                waveInfoBoxes[i].pos.y+=waveInfoBoxes[i].fallSpeed;
+                //make sure they don't go below the line
+                waveInfoBoxes[i].pos.y=MIN(waveInfoBottom, waveInfoBoxes[i].pos.y);
+                //set the alpha based on the distance to the bottom line
+                waveInfoBoxes[i].alpha=ofMap( waveInfoBottom-waveInfoBoxes[i].pos.y, 0, waveInfoDistToFadeOut, 255, 0, true);
+            }
         }
     }
     
@@ -827,15 +850,23 @@ void testApp::draw(){
     ofPopMatrix();
     
     //planning rect
-    if (showRect){
+    if (showRect || calibration.phase=="Location"){
         ofSetColor(0);
         ofFill();
         ofPushMatrix();
         ofTranslate(projX,projY);
         ofScale(projScale,projScale);
         ofSetRectMode(OF_RECTMODE_CORNER);
-        ofRect(0,0,fieldW*fieldScale,fieldH*fieldScale);
-        
+        if (showRect)
+            ofRect(0,0,fieldW*fieldScale,fieldH*fieldScale);
+        ofSetColor(255, 255, 255);
+        int titlePicX=(fieldW*fieldScale-titlePic.width)/2;
+        int titlePicY=(fieldH*fieldScale-titlePic.height)/2;
+        if (!showRect){
+            titlePicX+=30;
+            titlePicY+=30;
+        }
+        titlePic.draw( titlePicX , titlePicY );
         ofPopMatrix();
     }
     
@@ -909,41 +940,6 @@ void testApp::drawGame(){
     for (int i=0; i<inkParticles.size(); i++)
         inkParticles[i].draw();
     
-    //let the player no if there is no path
-    ofFill();
-    int messageX=615;
-    int messageY=-50;
-    int thisTextX;
-    if (noPath){
-        ofSetColor(0,0,0);
-        thisTextX=messageX-infoFont.stringWidth("HEY ASS BUTT, THERE IS NO PATH")/2;
-        infoFont.drawString("HEY ASS BUTT, THERE IS NO PATH",thisTextX,messageY);
-    }
-    //let the player know if they used too much ink
-    if (tooMuchInk){
-        ofSetColor(255,0,0);
-        thisTextX=messageX-infoFont.stringWidth("HEY CRAPLORD, YOU ARE OUT OF INK")/2;
-         infoFont.drawString("HEY CRAPLORD, YOU ARE OUT OF INK",thisTextX,messageY);
-    }
-    //let the player know if they are dead
-    if (health<=0){
-        ofSetColor(255,0,0);
-        if (ofGetFrameNum()/4%2==0) ofSetColor(0);
-        thisTextX=messageX-infoFont.stringWidth("NICE TRY. TOO BAD YOU DIED")/2;
-        infoFont.drawString("NICE TRY. TOO BAD YOU DIED",thisTextX,messageY);
-    }
-    
-    //check if we should be showing the wave complete animation
-    if (waveComplete)
-        drawWaveCompleteAnimation();
-    
-    //draw red over the game if the player was just hit
-    if (damageFlashTimer-- >0){
-        ofSetColor(255, 0, 0, 200);
-        ofSetRectMode(OF_RECTMODE_CORNER);
-        float padding=200;
-        ofRect(padding,padding,fieldW*fieldScale-padding*2,fieldH*fieldScale-padding*2);
-    }
     
 }
 
@@ -952,15 +948,33 @@ void testApp::drawWaveCompleteAnimation(){
     //get the amount of time the animation has played
     float curTime=ofGetElapsedTimef()-waveAnimationStart;
     
-    ofSetColor(ofRandom(255),ofRandom(255),ofRandom(255));
-    infoFontHuge.drawString("WAVE COMPLETE!",63,316);
+    cout<<curTime<<"   "<<wavesDone<<"  "<<waves.size()<<endl;
+    
+    int messageX=615;
+    int messageY=-120;
+    
+    ofColor thisCol;
+    thisCol.setHsb(ofRandom(255), 255, 100);
+    
+    ofSetColor(thisCol);
+    
     
     if (wavesDone)
-        infoFontHuge.drawString("GAME COMPLETE!",63,416);
-    
+        banners[3].draw(messageX, messageY);
+    else {
+        banners[2].draw(messageX, messageY);
+    }
+
+//    if (curWave+1 != waves.size()){
+//        banners[2].draw(messageX, messageY);
+//    }else{
+//        banners[3].draw(messageX, messageY);
+//        curTime=0;
+//    }
     
     //if time is up, return to the game
     if (curTime>waveAnimationTime){
+        cout<<"start it I think"<<endl;
         startNextWave();
     }
 }
@@ -986,6 +1000,7 @@ void testApp::drawPlayerInfo(){
     ofRect(xCenter,healthY,healthWidth,healthHeight);
     
     //ink value guide
+    /*
     ofFill();
     int guideX=-250;
     int guideY=566;
@@ -1011,7 +1026,7 @@ void testApp::drawPlayerInfo(){
     infoFontSmall.drawString("= "+ofToString(greenVal), guideX+guideCircleSize+20, guideY+guideCircleSize*6+textYOffset);
     int blueVal=(guideCircleSize/fieldScale) * bInkValue * 12;
     infoFontSmall.drawString("= "+ofToString(blueVal), guideX+guideCircleSize+20, guideY+guideCircleSize*9+textYOffset);
-    
+    */
     
     //written values
     int thisTextX;
@@ -1021,21 +1036,54 @@ void testApp::drawPlayerInfo(){
     ofSetColor(0);
     //make it blink if the player is out if ink
     if (tooMuchInk && ofGetFrameNum()/4%2==0)   ofSetColor(255,0,0);
-    int inktextRightX=0;
-    int inkTextY=172;
+    int inktextRightX=-150;
+    int inkTextY=160;
     
-    thisTextX=inktextRightX-infoFont.stringWidth("Ink Left:");
+    thisTextX=inktextRightX-infoFont.stringWidth("Ink Left:")/2;
     infoFont.drawString("Ink Left:",thisTextX,inkTextY);
     inkTextY+=infoFontBig.getLineHeight();
     
-    thisTextX=inktextRightX-infoFontBig.stringWidth(ofToString((int)(totalInk-inkUsed))+"/"+ofToString((int)totalInk));
-    infoFontBig.drawString(ofToString((int)(totalInk-inkUsed))+"/"+ofToString((int)totalInk),thisTextX,inkTextY);
+    //thisTextX=inktextRightX-infoFontBig.stringWidth(ofToString((int)(totalInk-inkUsed))+"/"+ofToString((int)totalInk));
+    thisTextX=inktextRightX-infoFontBig.stringWidth(ofToString((int)(totalInk-inkUsed)))/2;
+    infoFontBig.drawString(ofToString((int)(totalInk-inkUsed)),thisTextX,inkTextY);
     inkTextY+=infoFontBig.getLineHeight();
     
     
     //draw the wave info boxes
     for (int i=0; i<waveInfoBoxes.size(); i++){
         waveInfoBoxes[i].draw();
+    }
+    
+    //BANNERS
+    //let the player no if there is no path
+    ofFill();
+    int messageX=615;
+    int messageY=-120;
+    ofSetColor(0,0,0);
+    if (noPath){
+        banners[0].draw(messageX, messageY);
+    }
+    //let the player know if they used too much ink
+    if (tooMuchInk){
+        banners[1].draw(messageX, messageY);
+    }
+    //let the player know if they are dead
+    if (health<=0){
+        ofSetColor(255,0,0);
+        if (ofGetFrameNum()/4%2==0) ofSetColor(0);
+        banners[4].draw(messageX, messageY);
+    }
+    
+    //check if we should be showing the wave complete animation
+    if (waveComplete)
+        drawWaveCompleteAnimation();
+    
+    //draw red over the game if the player was just hit
+    if (damageFlashTimer-- >0){
+        ofSetColor(255, 0, 0, 200);
+        ofSetRectMode(OF_RECTMODE_CORNER);
+        float padding=200;
+        ofRect(padding,padding,fieldW*fieldScale-padding*2,fieldH*fieldScale-padding*2);
     }
     
 }
@@ -1224,6 +1272,7 @@ void testApp::convertDrawingToGame(){
             //pause the game if this foe can't reach the end
             if (!foes[i]->pathFound){
                 noPath=true;
+                SM.playSound("error");  //play the sound
                 cout<<"NO PATH. GET OUT"<<endl;
                 return;
             }
@@ -1307,7 +1356,7 @@ void testApp::convertDrawingToGame(){
     //check if they used more ink than they have
     if (inkUsed>totalInk){
         tooMuchInk=true;
-        //return; //don't need to bother checking anything else
+        SM.playSound("error");  //play the sound
     }else if (tooMuchInk){  //if they just fixed using too much ink, unpause the game
         tooMuchInk=false;
     }
@@ -1461,6 +1510,7 @@ void testApp::checkTowers(string type){
                     newTower->setup(contourFinder.blobs[i].centroid.x*fieldScale*0.5, contourFinder.blobs[i].centroid.y*fieldScale*0.5, size*fieldScale, ++towerID);
                     newTower->showAllInfo=&showAllInfo;
                     newTower->paused=&paused;
+                    newTower->SM= &SM;
                     towers.push_back(newTower);
                 }
                 if (type=="green"){
@@ -1468,6 +1518,7 @@ void testApp::checkTowers(string type){
                     newTower->setup(contourFinder.blobs[i].centroid.x*fieldScale*0.5, contourFinder.blobs[i].centroid.y*fieldScale*0.5, size*fieldScale, ++towerID);
                     newTower->showAllInfo=&showAllInfo;
                     newTower->paused=&paused;
+                    newTower->SM= &SM;
                     towers.push_back(newTower);
                 }
                 if (type=="blue"){
@@ -1475,6 +1526,7 @@ void testApp::checkTowers(string type){
                     newTower->setup(contourFinder.blobs[i].centroid.x*fieldScale*0.5, contourFinder.blobs[i].centroid.y*fieldScale*0.5, size*fieldScale, ++towerID);
                     newTower->showAllInfo=&showAllInfo;
                     newTower->paused=&paused;
+                    newTower->SM= &SM;
                     towers.push_back(newTower);
                 }
             }
@@ -1593,19 +1645,26 @@ void testApp::thickenWallImage(){
 
 //--------------------------------------------------------------
 void testApp::startNextWave(){
+    cout<<"start Next"<<endl;
     waveComplete=false;
     curWave++;
     if (curWave<waves.size()){
         waves[curWave].start();
     }else{
+        cout<<"we're done!"<<endl;
         curWave=waves.size()-1;
         wavesDone=true;
         endWave();  //show the game complete message
     }
     
     //check if it is time to increase the number of entrances starting with the 3rd wave
-    if (curWave>=3)
+    if (curWave>=4){ //should be 4
         numEntrances=2;
+        //take a new picture
+        takePictureTimer=takePictureTime+takePictureDelay;
+    }
+    
+    cout<<"end start Next"<<endl;
 }
 
 //--------------------------------------------------------------
@@ -1618,6 +1677,7 @@ void testApp::endWave(){
         if (waveInfoBoxes[i].waveNum== curWave+1)
             waveInfoBoxes[i].fading=true;
     }
+    cout<<"finish end wave"<<endl;
 }
 
 //--------------------------------------------------------------

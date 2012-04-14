@@ -36,19 +36,18 @@ col stealth
 mes They can go#through walls?
 
 new 3
+dur 35
+add immune_red 12
+col immune
+mes Hope you don't#use too much#red
+
+new 4
 dur 80
 add norm 30
 add fast 8
 add heavy 8
 rand
 mes Medley
-
-new 3
-dur 30
-add immune_red 12
-rand
-col immune
-mes Hope you don't#use too much#red
 
 new 5
 dur 30
@@ -58,32 +57,60 @@ col fast
 mes 2 Fast#2 Furious#Tokyo Drift
 
 new 5
-dur 60
-add norm 20
-add immune_red 10
-add heavy 10
-add fast 10
-add stealth 8
+dur 50
+add heavy 20
 rand
-mes Why won't#you die?
+col heavy
+mes Get Heavy
 
 new 6
-dur 60
-add norm 30
-add immune_red 13
-add heavy 13
-add fast 13
+dur 40
 add stealth 10
 rand
-mes Start praying
+col stealth
+mes More stealth
+
+new 6
+dur 100
+add norm 30
+add immune_red 20
+add heavy 20
+add fast 20
+add stealth 16
+rand
+mes Luke,#We've got#company
+
 
 new 8
 dur 60
-add norm 30
-add immune_red 13
-add heavy 13
-add fast 13
-add stealth 10
+add norm 60
+col norm
+mes Let's take#a break
+
+new 9
+dur 80
+add heavy 30
+add fast 30
 rand
-mes Keep praying
+mes fast and#slow
+
+new 10
+dur 100
+add norm 30
+add immune_red 20
+add heavy 20
+add fast 20
+add stealth 16
+rand
+mes Back for#more
+
+new 12
+dur 100
+add norm 30
+add immune_red 20
+add heavy 20
+add fast 20
+add stealth 16
+rand
+mes Are You#a bad#e-mailnough dude?
 

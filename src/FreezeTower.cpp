@@ -23,7 +23,7 @@ void FreezeTower::typeSetup(){
 void FreezeTower::draw(){
     ofFill();
     if (! *showAllInfo){
-        ofSetColor(0, 0, 255,120);
+        ofSetColor(0, 0, 255,100);
         if (playerDead) ofSetColor(100,100,100,70);
         
         ofCircle(pos.x, pos.y, range);
@@ -40,4 +40,5 @@ void FreezeTower::hitTarget(){
     shooting=false;
     //the effects that happen to the foe when they get hit
     target->freeze(freezeTime);
+    SM->playSound("freeze");  //play the sound
 }

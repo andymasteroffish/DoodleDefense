@@ -39,4 +39,6 @@ void HitTower::hitTarget(){
     shooting=false;
     //the effects that happen to the foe when they get hit
     target->hp-=bulletDamage;
+    //play the sound
+    SM->playSound("hit"); 
 }
