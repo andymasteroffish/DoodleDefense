@@ -47,7 +47,7 @@
     <val_0>119.000000</val_0>
 </BTHRESHOLD>
 <PROJX>
-    <val_0>1865.000000</val_0>
+    <val_0>1844.000000</val_0>
 </PROJX>
 <PROJY>
     <val_0>252.000000</val_0>
@@ -116,10 +116,10 @@
     <val_0>1.844445</val_0>
 </MAXCOMPACT>
 <RHUERANGE>
-    <val_0>15.000000</val_0>
+    <val_0>12.000000</val_0>
 </RHUERANGE>
 <RSATRANGE>
-    <val_0>29.000000</val_0>
+    <val_0>49.000000</val_0>
 </RSATRANGE>
 <RVALRANGE>
     <val_0>25.000000</val_0>

@@ -236,10 +236,13 @@ void testApp::setup(){
     //load the sounds
     SM.setup();
     SM.loadSound("audio/BOMB.wav", "bomb", 1);
+    SM.loadSound("audio/ENEMYEXPLODES.wav", "enemyDeath", 0.6);
     SM.loadSound("audio/ERROR.wav", "error", 1);
     SM.loadSound("audio/FREEZE.wav", "freeze", 0.3);
     SM.loadSound("audio/HIT.wav", "hit", 0.4);
+    SM.loadSound("audio/LOSEGAME2.wav", "playerHit", 1);
     SM.loadSound("audio/SHOT.wav", "shoot", 0.6);
+    SM.loadSound("audio/TRIUMPH3.wav", "beatWave", 1);
     
     
     //setup calibration with pointers to everything it needs
@@ -516,7 +519,10 @@ void testApp::update(){
                     newInkParticle.setInitialCondition(foes[i]->p.pos.x,foes[i]->p.pos.y,ofRandom(-5,5),ofRandom(-5,5));
                     inkParticles.push_back(newInkParticle);
                 }
+                //kill it
                 killFoe(i);
+                //play the sound
+                SM.playSound("enemyDeath");
             }
         }
         
@@ -991,7 +997,7 @@ void testApp::drawPlayerInfo(){
     //draw the bar
     ofFill();
     ofSetColor(224,27,76,200);
-    int healthFilLWidth=ofMap(health,0,healthStart,0,healthWidth);
+    int healthFilLWidth=ofMap(health,0,healthStart,0,healthWidth, true);
     ofRect(xCenter,healthY,healthFilLWidth,healthHeight);
     
     //draw the border
@@ -1603,14 +1609,20 @@ void testApp::takeDamage(int damage){
     if (health>0)   damageFlashTimer=3; 
     
     health-=damage;
-    health=MAX(0,health);
+    //health=MAX(0,health); //IT'S OK IF THE HEALTH GOES BELOW 0
     
     //check if the player is dead
     if (health==0){
         //gray out all towers
         for (int i=0; i<towers.size(); i++)
             towers[i]->playerDead=true;
+        
+        //play the sound
+        
     }
+    
+    //play the sound
+    SM.playSound("playerHit");
 }
 
 //--------------------------------------------------------------
@@ -1677,7 +1689,9 @@ void testApp::endWave(){
         if (waveInfoBoxes[i].waveNum== curWave+1)
             waveInfoBoxes[i].fading=true;
     }
-    cout<<"finish end wave"<<endl;
+    
+    //play the sound
+    SM.playSound("beatWave");
 }
 
 //--------------------------------------------------------------
