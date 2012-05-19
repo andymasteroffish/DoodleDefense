@@ -614,7 +614,7 @@ void Calibration::mouseDragged(int x, int y, int button){
         //move the black threshold slider if the user is dragging it
         if (draggingblackThreshSlider){
             blackThreshSliderX=MAX(blackThreshSliderMinX, MIN(blackThreshSliderMaxX, x));
-            panel->setValueI("BTHRESHOLD", ofMap(x,blackThreshSliderMinX, blackThreshSliderMaxX,255,0) );
+            panel->setValueI("BTHRESHOLD", ofMap(x,blackThreshSliderMinX, blackThreshSliderMaxX,0,255) );
         }
        
     }
