@@ -209,7 +209,14 @@ void testApp::setup(){
     banners[3].loadImage("banners/youwin.png");
     banners[4].loadImage("banners/youlose.png");
     
+    //player info pics
+    healthPic[0].loadImage("playerInfo/heartEmpty.png");
+    healthPic[1].loadImage("playerInfo/heartFull.png");
+    
+    //title
     titlePic.loadImage("banners/title.png");
+    titleGuide.loadImage("banners/titleGuide.png");
+    titleBig.loadImage("banners/titleBig.png");
     
     //getting ink back when towers and walls are erased
     towerRefund=0.7;    //what percentage of the tower's value a player gets back when they kill one
@@ -714,7 +721,6 @@ void testApp::update(){
         }
     }
     
-    cout<<"BACK TRACK TIMER: "<<punishmentFoeTimer<<endl;
 }
 
 //--------------------------------------------------------------
@@ -875,6 +881,7 @@ void testApp::draw(){
     ofPushMatrix();
     ofTranslate(projX, projY);
     ofScale(projScale, projScale);
+    
     //show the border
     ofSetRectMode(OF_RECTMODE_CORNER);
     ofSetColor(255);
@@ -882,29 +889,37 @@ void testApp::draw(){
     //show the game if not taking a picture or calibrating a part that requires not showing the game
     if (showGame && calibration.showGame)
         drawGame();
-    if (!showRect)
+    if (calibration.phase!="LocationKILLME" && calibration.phase!="Screen")
         drawPlayerInfo();   //show player stats that live outside of the game area
     ofPopMatrix();
     
-    //planning rect
-    if (showRect || calibration.phase=="Location"){
-        ofSetColor(0);
-        ofFill();
+    //showing title to place the projections
+    if (calibration.phase=="Location"){
+        
+        ofNoFill();
         ofPushMatrix();
         ofTranslate(projX,projY);
         ofScale(projScale,projScale);
         ofSetRectMode(OF_RECTMODE_CORNER);
-        if (showRect)
-            ofRect(0,0,fieldW*fieldScale,fieldH*fieldScale);
-        ofSetColor(255, 255, 255);
-        int titlePicX=(fieldW*fieldScale-titlePic.width)/2;
-        int titlePicY=(fieldH*fieldScale-titlePic.height)/2;
-        if (!showRect){
-            titlePicX+=30;
-            titlePicY+=30;
-        }
-        titlePic.draw( titlePicX , titlePicY );
+        ofSetColor(255);
+        titleBig.draw(-350,-380);
         ofPopMatrix();
+        
+    }
+
+    
+    //planning rect forteaching the camera how big the board is
+    if (calibration.phase=="Screen"){
+
+        ofFill();
+        ofPushMatrix();
+        ofTranslate(projX,projY);
+        ofScale(projScale,projScale);
+        ofSetColor(255);
+        ofSetRectMode(OF_RECTMODE_CORNER);
+        titleGuide.draw(0,0);        
+        ofPopMatrix();
+        
     }
     
     ofDisableAlphaBlending();
@@ -1017,51 +1032,22 @@ void testApp::drawWaveCompleteAnimation(){
 //--------------------------------------------------------------
 void testApp::drawPlayerInfo(){
     //draw health
-    ofSetRectMode(OF_RECTMODE_CENTER);
-    float xCenter=(fieldW*fieldScale)/2+25; //slight offset for the openning on the side
-    float healthY=910;
-    float healthHeight=60;
+    ofSetRectMode(OF_RECTMODE_CORNER);
+    float xCenter=(fieldW*fieldScale)/2+5; //slight offset for the openning on the side
+    float healthY=870;
     float healthWidth=(mazeRight-mazeLeft)*fieldScale;
+    float xLeft=xCenter-healthWidth/2+healthPic[0].width/2;
+    float healthSpacing= (healthWidth - healthStart*healthPic[0].width)/healthStart;
+    //draw full hearts for the life remaining
+    ofSetColor(255);
+    for (int i=0; i<health; i++){
+        healthPic[1].draw(xLeft+i*healthPic[0].width+i*healthSpacing,healthY);
+    }
+    //end empty life for the life lost
+    for (int i=health; i<healthStart; i++){
+        healthPic[0].draw(xLeft+i*healthPic[0].width+i*healthSpacing,healthY);
+    }
     
-    //draw the bar
-    ofFill();
-    ofSetColor(224,27,76,200);
-    int healthFilLWidth=ofMap(health,0,healthStart,0,healthWidth, true);
-    ofRect(xCenter,healthY,healthFilLWidth,healthHeight);
-    
-    //draw the border
-    ofNoFill();
-    ofSetColor(0);
-    ofRect(xCenter,healthY,healthWidth,healthHeight);
-    
-    //ink value guide
-    /*
-    ofFill();
-    int guideX=-250;
-    int guideY=566;
-    int guideCircleSize=25;
-    
-    ofSetColor(0);
-    ofRect(guideX,guideY, 60,15);
-    ofSetColor(255,0,0);
-    ofCircle(guideX,guideY+guideCircleSize*3,guideCircleSize);
-    ofSetColor(0,255,0);
-    ofCircle(guideX,guideY+guideCircleSize*6,guideCircleSize);
-    ofSetColor(0,0,255);
-    ofCircle(guideX,guideY+guideCircleSize*9,guideCircleSize);
-    
-    //the exact values for this are estimated. Maybe there is a better way of getting this data?
-    ofSetColor(0);
-    int textYOffset=8;  //just need to bump them down a bit
-    int blackVal=blackInkValue*40;    
-    infoFontSmall.drawString("= "+ofToString(blackVal), guideX+guideCircleSize+20, guideY+guideCircleSize*0+textYOffset);
-    int redVal=(guideCircleSize/fieldScale) * rInkValue * 12;
-    infoFontSmall.drawString("= "+ofToString(redVal), guideX+guideCircleSize+20, guideY+guideCircleSize*3+textYOffset);
-    int greenVal=(guideCircleSize/fieldScale) * gInkValue * 12;
-    infoFontSmall.drawString("= "+ofToString(greenVal), guideX+guideCircleSize+20, guideY+guideCircleSize*6+textYOffset);
-    int blueVal=(guideCircleSize/fieldScale) * bInkValue * 12;
-    infoFontSmall.drawString("= "+ofToString(blueVal), guideX+guideCircleSize+20, guideY+guideCircleSize*9+textYOffset);
-    */
     
     //written values
     int thisTextX;
@@ -1085,6 +1071,7 @@ void testApp::drawPlayerInfo(){
     
     
     //draw the wave info boxes
+    ofSetRectMode(OF_RECTMODE_CENTER);
     for (int i=0; i<waveInfoBoxes.size(); i++){
         waveInfoBoxes[i].draw();
     }
@@ -1130,6 +1117,7 @@ void testApp::exit() {
 //--------------------------------------------------------------
 void testApp::keyPressed(int key){
     calibration.keyPressed(key);
+    health--;
     
     switch (key){
         //toggles showing the debug info

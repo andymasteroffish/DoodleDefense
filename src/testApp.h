@@ -158,7 +158,7 @@ public:
     
     ofxCvContourFinder 	contourFinder;  //for finding the blobs of color
     
-    bool showRect;  //shows the size of the field for the sake of calibrating
+    bool showRect;  //shows the size of the field for the sake of calibrating NOT USED KILL THIS
     
     //ink ussage - how much each pixel costs
     float blackInkValue;
@@ -188,13 +188,16 @@ public:
     
     //the player
     int score;
-    float healthStart;
-    float health;
+    int healthStart;
+    int health;
     float startInk;
     float totalInk;
     float inkUsed;
     
     int damageFlashTimer;   //how long to flash red when hit
+    
+    //images for displaying player info
+    ofImage healthPic[2];
    
     
     //the foes
@@ -224,6 +227,8 @@ public:
     //banners
     ofImage banners[5];
     ofImage titlePic;
+    ofImage titleGuide;
+    ofImage titleBig;
     
     bool showAllInfo;   //shows all of the bullshit lines and data
     
