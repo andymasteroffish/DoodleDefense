@@ -14,7 +14,7 @@
 class WaveInfoBox{
 public:
     
-    void setup(int _waveNum, string _message, ofTrueTypeFont * _waveFont, ofTrueTypeFont * _messageFont, string colorID, float startX, float startY, float _boxW, float _boxH);
+    void setup(int _waveNum, string _message, ofImage * _backPic, ofTrueTypeFont * _waveFont, ofTrueTypeFont * _messageFont, string colorID, float startX, float startY, float _boxW, float _boxH);
     void draw();
     
     //position
@@ -33,6 +33,8 @@ public:
     
     ofPoint waveTextOffset;
     ofPoint messageTextOffset;
+    
+    ofImage * backPic;
     
     //fading
     float alpha;

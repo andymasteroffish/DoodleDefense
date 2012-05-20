@@ -31,6 +31,15 @@ void Foe::setup(vectorField * _vf, float x, float y, float _goalX, float _goalY,
     goalX=_goalX/fieldScale;
     goalY=_goalY/fieldScale;
     
+    //set it that it has not gone through any tiles yet
+    justBacktracked=false;
+    maxSpeed=1;
+    reexploredTileSpeedBonus = 0.004;
+    for (int c=0; c<fieldW; c++)
+        for (int r=0; r<fieldH; r++)
+            tilesExplored[c][r]=false;
+    
+    
     //game state info
     dead=false;
     reachedTheEnd=false;
@@ -55,6 +64,7 @@ void Foe::setup(vectorField * _vf, float x, float y, float _goalX, float _goalY,
     //turning the picture
     displayAngle=0;
     turnSpeed=0.1;
+    
 }
 
 //------------------------------------------------------------
@@ -79,7 +89,7 @@ void Foe::update(){
             float atraction=moveAtraction;
             p.addAttractionForce(moveParticle, p.pos.distance(moveParticle.pos)*1.5, atraction);
             
-            moveAtraction+=moveAtractionIncrease;
+            moveAtraction+= moveAtractionIncrease;
             
             //get force from the vector field.
             ofVec2f frc;
@@ -238,12 +248,28 @@ void Foe::setNextNode(){
     //advance the nextNode
     nextNode=MAX(nextNode-1,0);
     
+    //get the field position of the node
+    int tileX= MIN( fieldW-1, MAX(0, route[nextNode]->x));
+    int tileY= MIN( fieldH-1, MAX(0, route[nextNode]->y));
+    
     //set the particle position
-    moveParticle.pos.x=route[nextNode]->x*fieldScale;
-    moveParticle.pos.y=route[nextNode]->y*fieldScale;
+//    moveParticle.pos.x=route[nextNode]->x*fieldScale;
+//    moveParticle.pos.y=route[nextNode]->y*fieldScale;
+    moveParticle.pos.x=tileX*fieldScale;
+    moveParticle.pos.y=tileY*fieldScale;
 
     
     moveAtraction=speed;
+    
+    //see if the foe has already been here
+    if (tilesExplored[tileX][tileY]){
+        speed+=reexploredTileSpeedBonus;
+        speed=MIN(maxSpeed,speed);
+        justBacktracked=true;
+    }
+    
+    //set this tile as explored
+    tilesExplored[tileX][tileY]=true;
     
 }
 

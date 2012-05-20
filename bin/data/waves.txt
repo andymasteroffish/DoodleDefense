@@ -1,6 +1,6 @@
 new 1
-dur 8
-add norm 2
+dur 2
+add norm 1
 col norm
 mes TEST
 

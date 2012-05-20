@@ -9,9 +9,10 @@
 #include "WaveInfoBox.h"
 
 
-void WaveInfoBox::setup(int _waveNum, string _message, ofTrueTypeFont * _waveFont, ofTrueTypeFont * _messageFont, string colorID, float startX, float startY, float _boxW, float _boxH){
+void WaveInfoBox::setup(int _waveNum, string _message, ofImage * _backPic, ofTrueTypeFont * _waveFont, ofTrueTypeFont * _messageFont, string colorID, float startX, float startY, float _boxW, float _boxH){
     waveNum=_waveNum;
     message=_message;
+    backPic= _backPic;
     waveFont=_waveFont;
     messageFont=_messageFont;
     pos.x=startX;
@@ -51,17 +52,15 @@ void WaveInfoBox::setup(int _waveNum, string _message, ofTrueTypeFont * _waveFon
 
 void WaveInfoBox::draw(){
     
-    ofFill();
-    ofSetColor(bgColor.r, bgColor.g, bgColor.b, alpha);
-    ofRect(pos.x, pos.y, boxW, boxH);
+    int imgPaddingX=40;
+    int imgPaddingY=25;
     
-    //redraw the rect outline
-    ofNoFill();
-    ofSetLineWidth(3);
-    ofSetColor(0,0,0, alpha);
-    ofRect(pos.x, pos.y, boxW, boxH);
+    //draw the box
+    ofSetColor(bgColor.r, bgColor.g, bgColor.b, alpha);
+    backPic->draw(pos.x,pos.y);
     
     //write the text
+    ofSetColor(0,0,0, alpha);
     waveFont->drawString("Wave #"+ofToString(waveNum), pos.x +waveTextOffset.x, pos.y+waveTextOffset.y);
     messageFont->drawString(message, pos.x +messageTextOffset.x, pos.y+messageTextOffset.y);
     

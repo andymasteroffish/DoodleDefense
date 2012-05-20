@@ -211,6 +211,12 @@ public:
     ofImage stealthFoePic[2][NUM_FOE_FRAMES]; 
     ofImage immuneRedFoePic[2][NUM_FOE_FRAMES]; 
     
+    //punishing the user for making the foes backtrack too much by spawning stealth foes
+    float punishmentFoeTime;    //how many back tracks to wait before spawning
+    float punishmentTimerDecrease;  //how much to take away each frame to prevent normal play from triggering it
+    float punishmentFoeTimer;
+    
+    
     //explosions and poofs from hitting foes
     ofImage explosionPic;
     vector <Explosion> explosions;
@@ -249,6 +255,7 @@ public:
     float waveInfoBottom;   //line where the boxes want to fall to
     float waveInfoX;
     float waveInfoDistToFadeOut;    //how far from the bottom the box can be before daing completely
+    ofImage waveInfoPics[1];        //images for the boxes
     
     //calibrating the game
     Calibration calibration;

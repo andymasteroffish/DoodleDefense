@@ -65,6 +65,12 @@ public:
     int horzDist;
     int diagDist;
     
+    //keeping track of where the foe has been to punish players who draw a wall and remove it to force the foe to back track
+    bool tilesExplored[160][120];   //hardcoding the fieldWidth, fieldHeight
+    float reexploredTileSpeedBonus;
+    float maxSpeed;   
+    bool justBacktracked;   //flag to count it in testApp
+    
     //game vals
     string type;            //what kind of foe this is
     float speed;            //starting force of atraction to next node

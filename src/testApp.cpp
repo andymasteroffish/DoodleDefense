@@ -114,9 +114,11 @@ void testApp::setup(){
     infoFontHuge.loadFont(fontName, 100, true, true);
     
     //displaying the wave info
-    waveInfoBottom=630;
+    waveInfoBottom=650;
     waveInfoX=1400;
-    waveInfoDistToFadeOut=900;
+    waveInfoDistToFadeOut=1000;
+    //box images
+    waveInfoPics[0].loadImage("waveInfoBoxes/boxTest.png");
     
     //saving a picture of the board
     boardImg.allocate(fieldW*4,fieldH*4);
@@ -279,11 +281,16 @@ void testApp::setup(){
         screenScale=((float)ofGetScreenHeight()/(float)ofGetHeight()) *0.98;    //just shrink it slightly more
     }
     
+    //punishing the player for forcing backtracks
+    punishmentFoeTime=50;
+    punishmentTimerDecrease=0.05;
+    punishmentFoeTimer=0;
+    
     
     reset();
     convertDrawingToGame();
     
-    int skipTo=8;
+    int skipTo=0;
     totalInk=getInkFromWaves(skipTo);
     curWave=skipTo;
     numEntrances=1;
@@ -359,13 +366,13 @@ void testApp::loadFromText(){
     
     //set the wave info boxes
     waveInfoBoxes.clear();  //get rid of any old ones
-    float waveInfoSpacing=10;
+    float waveInfoSpacing=80;
     float boxWidth=400;
     float boxHeight=300;
     for (int i=0; i<waves.size(); i++){
         WaveInfoBox newInfoBox;
         
-        newInfoBox.setup(i+1, waves[i].message, &infoFont, &infoFontSmall, waves[i].boxColorID, waveInfoX, waveInfoBottom-i*(boxHeight+waveInfoSpacing), boxWidth, boxHeight);
+        newInfoBox.setup(i+1, waves[i].message, &waveInfoPics[0], &infoFont, &infoFontSmall, waves[i].boxColorID, waveInfoX, waveInfoBottom-i*(boxHeight+waveInfoSpacing), boxWidth, boxHeight);
         newInfoBox.alpha=ofMap( waveInfoBottom-newInfoBox.pos.y, 0, waveInfoDistToFadeOut, 255, 0, true);
         waveInfoBoxes.push_back(newInfoBox);
     }
@@ -501,10 +508,18 @@ void testApp::update(){
         
         //update Foes
         bool allFoesHavePath=true;  //assume that all foes can reach the end
+        bool addToPunishmentTimer=false;    //assume that none back tracked
         for (int i=foes.size()-1; i>=0; i--){
             foes[i]->update();
             
             if (!foes[i]->pathFound) allFoesHavePath=false;
+            
+            //if it just backtracked, increase the timer before spawning a punishment stealth foe
+            if (foes[i]->justBacktracked){
+                foes[i]->justBacktracked=false; //turn off the flag
+                addToPunishmentTimer=true;
+                //punishmentFoeTimer+= 1.0/foes.size(); //make it relative to the number of foes on screen
+            }
             
             //remove it if it reached the end
             if (foes[i]->reachedTheEnd){
@@ -524,6 +539,21 @@ void testApp::update(){
                 //play the sound
                 SM.playSound("enemyDeath");
             }
+        }
+        
+        //add to the punishment timer if a foe back tracked
+        if (addToPunishmentTimer)
+            punishmentFoeTimer++;
+        
+        //reduce the timer slightly to account for no back tracking recently
+        if (punishmentFoeTimer>0 && !paused)
+            punishmentFoeTimer-=punishmentTimerDecrease;
+        
+        //check if it's time to spawn an punishment foe
+        if (punishmentFoeTimer>=punishmentFoeTime){
+            punishmentFoeTimer=0;   //reset the timer
+            //spawn a stealth foe at the current wave level
+            spawnFoe("stealth", waves[curWave].level+2);
         }
         
         //if the game was paused because a foes didn't have a path, unpause if the way is clear now
@@ -684,6 +714,7 @@ void testApp::update(){
         }
     }
     
+    cout<<"BACK TRACK TIMER: "<<punishmentFoeTimer<<endl;
 }
 
 //--------------------------------------------------------------
@@ -953,8 +984,6 @@ void testApp::drawGame(){
 void testApp::drawWaveCompleteAnimation(){
     //get the amount of time the animation has played
     float curTime=ofGetElapsedTimef()-waveAnimationStart;
-    
-    cout<<curTime<<"   "<<wavesDone<<"  "<<waves.size()<<endl;
     
     int messageX=615;
     int messageY=-120;
@@ -1616,9 +1645,6 @@ void testApp::takeDamage(int damage){
         //gray out all towers
         for (int i=0; i<towers.size(); i++)
             towers[i]->playerDead=true;
-        
-        //play the sound
-        
     }
     
     //play the sound
