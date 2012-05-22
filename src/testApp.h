@@ -197,7 +197,8 @@ public:
     int damageFlashTimer;   //how long to flash red when hit
     
     //images for displaying player info
-    ofImage healthPic[2];
+    ofImage healthPicFull[15];
+    ofImage healthPicEmpty[15];
    
     
     //the foes

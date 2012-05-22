@@ -210,8 +210,10 @@ void testApp::setup(){
     banners[4].loadImage("banners/youlose.png");
     
     //player info pics
-    healthPic[0].loadImage("playerInfo/heartEmpty.png");
-    healthPic[1].loadImage("playerInfo/heartFull.png");
+    for(int i=0; i<healthStart; i++){
+        healthPicFull[i].loadImage("playerInfo/hearts/filled_hearts-"+ofToString(i+1)+".png");
+        healthPicEmpty[i].loadImage("playerInfo/hearts/outlinehearts-"+ofToString(i+1)+".png");
+    }
     
     //title
     titlePic.loadImage("banners/title.png");
@@ -525,7 +527,6 @@ void testApp::update(){
             if (foes[i]->justBacktracked){
                 foes[i]->justBacktracked=false; //turn off the flag
                 addToPunishmentTimer=true;
-                //punishmentFoeTimer+= 1.0/foes.size(); //make it relative to the number of foes on screen
             }
             
             //remove it if it reached the end
@@ -559,8 +560,8 @@ void testApp::update(){
         //check if it's time to spawn an punishment foe
         if (punishmentFoeTimer>=punishmentFoeTime){
             punishmentFoeTimer=0;   //reset the timer
-            //spawn a stealth foe at the current wave level
-            spawnFoe("stealth", waves[curWave].level+2);
+            //spawn a stealth foe slightly stronger than the current wave level
+            spawnFoe("stealth", waves[curWave].level+1);
         }
         
         //if the game was paused because a foes didn't have a path, unpause if the way is clear now
@@ -1031,21 +1032,27 @@ void testApp::drawWaveCompleteAnimation(){
 
 //--------------------------------------------------------------
 void testApp::drawPlayerInfo(){
+    //drawibng a white box for testing
+//    ofSetRectMode(OF_RECTMODE_CORNER);
+//    ofFill();
+//    ofSetColor(255);
+//    ofRect(0,0,3000,3000);
+    
     //draw health
     ofSetRectMode(OF_RECTMODE_CORNER);
     float xCenter=(fieldW*fieldScale)/2+5; //slight offset for the openning on the side
     float healthY=870;
     float healthWidth=(mazeRight-mazeLeft)*fieldScale;
-    float xLeft=xCenter-healthWidth/2+healthPic[0].width/2;
-    float healthSpacing= (healthWidth - healthStart*healthPic[0].width)/healthStart;
+    float xLeft=xCenter-healthWidth/2+healthPicFull[0].width/2;
+    float healthSpacing= (healthWidth - healthStart*healthPicFull[0].width)/healthStart;
     //draw full hearts for the life remaining
     ofSetColor(255);
     for (int i=0; i<health; i++){
-        healthPic[1].draw(xLeft+i*healthPic[0].width+i*healthSpacing,healthY);
+        healthPicFull[i].draw(xLeft+i*healthPicFull[0].width+i*healthSpacing,healthY);
     }
     //end empty life for the life lost
     for (int i=health; i<healthStart; i++){
-        healthPic[0].draw(xLeft+i*healthPic[0].width+i*healthSpacing,healthY);
+        healthPicEmpty[0].draw(xLeft+i*healthPicEmpty[0].width+i*healthSpacing,healthY);
     }
     
     
