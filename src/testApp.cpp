@@ -118,7 +118,8 @@ void testApp::setup(){
     waveInfoX=1400;
     waveInfoDistToFadeOut=1000;
     //box images
-    waveInfoPics[0].loadImage("waveInfoBoxes/boxTest.png");
+    for (int i=0; i<NUM_WAVE_INFO_BOX_PICS; i++)
+        waveInfoPics[i].loadImage("waveInfoBoxes/boxes-"+ofToString(i+1)+".png");
     
     //saving a picture of the board
     boardImg.allocate(fieldW*4,fieldH*4);
@@ -381,7 +382,7 @@ void testApp::loadFromText(){
     for (int i=0; i<waves.size(); i++){
         WaveInfoBox newInfoBox;
         
-        newInfoBox.setup(i+1, waves[i].message, &waveInfoPics[0], &infoFont, &infoFontSmall, waves[i].boxColorID, waveInfoX, waveInfoBottom-i*(boxHeight+waveInfoSpacing), boxWidth, boxHeight);
+        newInfoBox.setup(i+1, waves[i].message, &waveInfoPics[i%3], &infoFont, &infoFontSmall, waves[i].boxColorID, waveInfoX, waveInfoBottom-i*(boxHeight+waveInfoSpacing), boxWidth, boxHeight);
         newInfoBox.alpha=ofMap( waveInfoBottom-newInfoBox.pos.y, 0, waveInfoDistToFadeOut, 255, 0, true);
         waveInfoBoxes.push_back(newInfoBox);
     }
@@ -1033,10 +1034,10 @@ void testApp::drawWaveCompleteAnimation(){
 //--------------------------------------------------------------
 void testApp::drawPlayerInfo(){
     //drawibng a white box for testing
-//    ofSetRectMode(OF_RECTMODE_CORNER);
-//    ofFill();
-//    ofSetColor(255);
-//    ofRect(0,0,3000,3000);
+    ofSetRectMode(OF_RECTMODE_CORNER);
+    ofFill();
+    ofSetColor(255);
+    ofRect(0,0,3000,3000);
     
     //draw health
     ofSetRectMode(OF_RECTMODE_CORNER);

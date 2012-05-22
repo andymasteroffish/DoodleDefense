@@ -261,7 +261,8 @@ public:
     float waveInfoBottom;   //line where the boxes want to fall to
     float waveInfoX;
     float waveInfoDistToFadeOut;    //how far from the bottom the box can be before daing completely
-    ofImage waveInfoPics[1];        //images for the boxes
+    #define NUM_WAVE_INFO_BOX_PICS 3
+    ofImage waveInfoPics[NUM_WAVE_INFO_BOX_PICS];        //images for the boxes
     
     //calibrating the game
     Calibration calibration;
