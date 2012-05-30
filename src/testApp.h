@@ -194,6 +194,7 @@ public:
     float totalInk;
     float inkUsed;
     
+    int damageFlashTime;
     int damageFlashTimer;   //how long to flash red when hit
     
     //images for displaying player info
@@ -227,9 +228,10 @@ public:
     
     //banners
     ofImage banners[5];
-    ofImage titlePic;
+    //ofImage titlePic;
     ofImage titleGuide;
     ofImage titleBig;
+    ofImage playerHitPic;
     
     bool showAllInfo;   //shows all of the bullshit lines and data
     

@@ -217,9 +217,13 @@ void testApp::setup(){
     }
     
     //title
-    titlePic.loadImage("banners/title.png");
+    //titlePic.loadImage("banners/title.png");
     titleGuide.loadImage("banners/titleGuide.png");
     titleBig.loadImage("banners/titleBig.png");
+    
+    //getting hit
+    damageFlashTime=10;
+    playerHitPic.loadImage("banners/playerHit.png");
     
     //getting ink back when towers and walls are erased
     towerRefund=0.7;    //what percentage of the tower's value a player gets back when they kill one
@@ -254,7 +258,7 @@ void testApp::setup(){
     SM.loadSound("audio/HIT.wav", "hit", 0.4);
     SM.loadSound("audio/LOSEGAME2.wav", "playerHit", 1);
     SM.loadSound("audio/SHOT.wav", "shoot", 0.6);
-    SM.loadSound("audio/TRIUMPH3.wav", "beatWave", 1);
+    SM.loadSound("audio/TRIUMPH4.wav", "beatWave", 1);
     
     
     //setup calibration with pointers to everything it needs
@@ -891,7 +895,8 @@ void testApp::draw(){
     //show the game if not taking a picture or calibrating a part that requires not showing the game
     if (showGame && calibration.showGame)
         drawGame();
-    if (calibration.phase!="LocationKILLME" && calibration.phase!="Screen")
+    //most calibration screens don't need to show the player info
+    if (calibration.phase!="Screen" && calibration.phase!="Ink" && calibration.phase!="Colors")
         drawPlayerInfo();   //show player stats that live outside of the game area
     ofPopMatrix();
     
@@ -904,7 +909,7 @@ void testApp::draw(){
         ofScale(projScale,projScale);
         ofSetRectMode(OF_RECTMODE_CORNER);
         ofSetColor(255);
-        titleBig.draw(-350,-380);
+        titleBig.draw(-310,-300);
         ofPopMatrix();
         
     }
@@ -1034,10 +1039,10 @@ void testApp::drawWaveCompleteAnimation(){
 //--------------------------------------------------------------
 void testApp::drawPlayerInfo(){
     //drawibng a white box for testing
-    ofSetRectMode(OF_RECTMODE_CORNER);
-    ofFill();
-    ofSetColor(255);
-    ofRect(0,0,3000,3000);
+//    ofSetRectMode(OF_RECTMODE_CORNER);
+//    ofFill();
+//    ofSetColor(255);
+//    ofRect(0,0,3000,3000);
     
     //draw health
     ofSetRectMode(OF_RECTMODE_CORNER);
@@ -1110,10 +1115,9 @@ void testApp::drawPlayerInfo(){
     
     //draw red over the game if the player was just hit
     if (damageFlashTimer-- >0){
-        ofSetColor(255, 0, 0, 200);
         ofSetRectMode(OF_RECTMODE_CORNER);
-        float padding=200;
-        ofRect(padding,padding,fieldW*fieldScale-padding*2,fieldH*fieldScale-padding*2);
+        ofSetColor(255, ofMap(damageFlashTimer, 0, damageFlashTime, 0, 255));
+        playerHitPic.draw(75,80);
     }
     
 }
@@ -1125,7 +1129,6 @@ void testApp::exit() {
 //--------------------------------------------------------------
 void testApp::keyPressed(int key){
     calibration.keyPressed(key);
-    health--;
     
     switch (key){
         //toggles showing the debug info
@@ -1631,7 +1634,7 @@ void testApp::killFoe(int num){
 //--------------------------------------------------------------
 void testApp::takeDamage(int damage){
     //show red for a second if the player is still in the game
-    if (health>0)   damageFlashTimer=3; 
+    if (health>0)   damageFlashTimer=damageFlashTime; 
     
     health-=damage;
     //health=MAX(0,health); //IT'S OK IF THE HEALTH GOES BELOW 0

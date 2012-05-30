@@ -1,10 +1,4 @@
 new 1
-dur 2
-add norm 1
-col norm
-mes TEST
-
-new 1
 dur 50
 add norm 15
 col norm
