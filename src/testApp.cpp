@@ -259,6 +259,8 @@ void testApp::setup(){
     SM.loadSound("audio/LOSEGAME2.wav", "playerHit", 1);
     SM.loadSound("audio/SHOT.wav", "shoot", 0.6);
     SM.loadSound("audio/TRIUMPH4.wav", "beatWave", 1);
+    SM.loadSound("audio/NEWLOSE1.wav", "lose", 1);
+    SM.loadSound("audio/STARTGAME.wav", "start", 1);
     
     
     //setup calibration with pointers to everything it needs
@@ -429,6 +431,10 @@ void testApp::reset(){
     wavesDone=false;
     loadFromText();
     startNextWave();
+    
+    //play the sound
+    if (ofGetFrameNum()>5)  //don't play the sound when the game first turns on
+        SM.playSound("start");
 }
 
 //--------------------------------------------------------------
@@ -1644,6 +1650,8 @@ void testApp::takeDamage(int damage){
         //gray out all towers
         for (int i=0; i<towers.size(); i++)
             towers[i]->playerDead=true;
+        //play the lose game sound
+        SM.playSound("lose");
     }
     
     //play the sound
