@@ -112,5 +112,5 @@ add heavy 20
 add fast 20
 add stealth 16
 rand
-mes Are You#a bad#e-mailnough dude?
+mes Are You#a bad#enough dude?
 

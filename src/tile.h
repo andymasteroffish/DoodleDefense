@@ -13,7 +13,7 @@
 
 class tile{
 public:
-    int x,y;    //locaiton of the tile
+    int x,y;    //location of the tile
     
     //pathfinding distance values
     int f;  //total of the distance to get to this tile and estimated distance to goal

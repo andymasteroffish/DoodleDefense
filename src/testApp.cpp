@@ -955,7 +955,7 @@ void testApp::draw(){
     
     
     
-    ofSetLineWidth(1);
+    //ofSetLineWidth(1);
     //panel.draw();
 }
 
