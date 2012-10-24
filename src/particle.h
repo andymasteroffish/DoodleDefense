@@ -29,6 +29,7 @@ public:
     void setInitialCondition(float px, float py, float vx, float vy);
     void update();
     void draw();
+    void drawSmall();
 	
     void bounceOffWalls();
 	

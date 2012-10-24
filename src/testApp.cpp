@@ -547,12 +547,12 @@ void testApp::update(){
             }
             //remove it if it is dead
             else if (foes[i]->dead){
-                //spawn ink particles
-                for (int p=0; p<foes[i]->inkVal;p++){
-                    particle newInkParticle;
-                    newInkParticle.setInitialCondition(foes[i]->p.pos.x,foes[i]->p.pos.y,ofRandom(-5,5),ofRandom(-5,5));
-                    inkParticles.push_back(newInkParticle);
-                }
+                //spawn ink particles NOW DOING THIS IN KILLFOE()
+//                for (int p=0; p<foes[i]->inkVal;p++){
+//                    particle newInkParticle;
+//                    newInkParticle.setInitialCondition(foes[i]->p.pos.x,foes[i]->p.pos.y,ofRandom(-5,5),ofRandom(-5,5));
+//                    inkParticles.push_back(newInkParticle);
+//                }
                 //kill it
                 killFoe(i);
                 //play the sound
@@ -1001,9 +1001,9 @@ void testApp::drawGame(){
         explosions[i].draw();
     
     //draw ink particles if there are any
-    ofSetColor(150);
+    ofSetColor(30,220);
     for (int i=0; i<inkParticles.size(); i++)
-        inkParticles[i].draw();
+        inkParticles[i].drawSmall();
     
     
 }
@@ -1621,10 +1621,26 @@ void testApp::spawnFoe(string name, int level){
 
 //--------------------------------------------------------------
 void testApp::killFoe(int num){
-    //spawn an explosion
-    Explosion newExplosion;
-    newExplosion.setup(foes[num]->p.pos, &explosionPic);
-    explosions.push_back(newExplosion);
+    //spawn an explosion and make ink if it didn't reach the end
+    if (!foes[num]->reachedTheEnd){
+        Explosion newExplosion;
+        newExplosion.setup(foes[num]->p.pos, &explosionPic);
+        explosions.push_back(newExplosion);
+        
+        //spawn ink particles
+        for (int p=0; p<foes[num]->inkVal;p++){
+            particle newInkParticle;
+            newInkParticle.setInitialCondition(foes[num]->p.pos.x,foes[num]->p.pos.y,ofRandom(-5,5),ofRandom(-5,5));
+            inkParticles.push_back(newInkParticle);
+        }
+
+        
+    }
+    
+    //spawn an explosion OLD CODE
+//    Explosion newExplosion;
+//    newExplosion.setup(foes[num]->p.pos, &explosionPic);
+//    explosions.push_back(newExplosion);
     
     //go through and find any towers targetting this foe and remove the target
     for (int i=0; i<towers.size(); i++){

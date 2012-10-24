@@ -252,6 +252,12 @@ void particle::draw(){
 }
 
 
+//------------------------------------------------------------
+void particle::drawSmall(){
+    ofCircle(pos.x, pos.y, 4);
+}
+
+
 
 //------------------------------------------------------------
 void particle::bounceOffWalls(){
