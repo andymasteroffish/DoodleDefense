@@ -399,6 +399,8 @@ void Calibration::draw(){
         otherInfo+="Press V to open video prefrences.\n";
         otherInfo+="Press ENTER to reset the game.\n";
         otherInfo+="Press SPACE to take a new image of the board.\n";
+        if(*easyMode) otherInfo+="Easy mode on.\n";
+        otherInfo+="Max Compactness: "+ofToString(*maxCompactness)+"\n";
         font.drawString(otherInfo, 100, 700);
         
         font.drawString("Running at "+ofToString(ofGetFrameRate())+ "fps", 100, 600);

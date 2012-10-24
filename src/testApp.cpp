@@ -282,6 +282,8 @@ void testApp::setup(){
     calibration.changeBackgroundDiff = &changeBackgroundDiff;
     calibration.saveChangeBackground = &saveChangeBackground;
     calibration.takePictureTimer = &takePictureTimer;
+    calibration.easyMode = &easyMode;
+    calibration.maxCompactness = &maxCompactness;
     //reasons the game might be paused
     calibration.paused = &paused;
     calibration.playerPause= &playerPause;
@@ -312,6 +314,8 @@ void testApp::setup(){
     numEntrances=1;
     
     video.videoSettings();
+    
+    easyMode = false;
     
 }
 
@@ -439,7 +443,6 @@ void testApp::reset(){
 
 //--------------------------------------------------------------
 void testApp::update(){
-    cout<<maxCompactness<<endl;
     calibration.update();
     
     //wall image needs updating if that is being set
@@ -1178,6 +1181,20 @@ void testApp::keyPressed(int key){
             video.videoSettings();
             break;
             
+        case 'e':
+            easyMode=!easyMode;
+            break;
+            
+        //max compactness was 1.844
+        case '-':
+        case '_':
+            panel.setValueF("MAXCOMPACT", maxCompactness-0.1);
+            break;
+        case '=':
+        case '+':
+            panel.setValueF("MAXCOMPACT", maxCompactness+0.1);
+            break;
+            
     }
     
 }
@@ -1577,6 +1594,11 @@ void testApp::checkTowers(string type){
 
 //--------------------------------------------------------------
 void testApp::spawnFoe(string name, int level){ 
+    if (easyMode){
+        level--;
+    }
+    cout<<"this level foe: "<<level<<endl;
+    
     if (name=="fast"){
         FastFoe * newFoe=new FastFoe;
         newFoe->setPics(fastFoePic[0], fastFoePic[1]);

@@ -280,6 +280,8 @@ public:
     ofTrueTypeFont infoFontBig;
     ofTrueTypeFont infoFontHuge;
     
+    //for Time Warner
+    bool easyMode;
     
 };
 

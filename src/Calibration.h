@@ -154,6 +154,11 @@ public:
     bool * changePause;    //player in frnt of the screen
     bool * gameStarted;   //the camera must have taken at least one image to play the game
     int * takePictureTimer;
+    
+    //added for time warner show
+    bool *easyMode;
+    float * maxCompactness;
+    
     //---------------------
     //Camera Phase
     bool * saveChangeBackground;
