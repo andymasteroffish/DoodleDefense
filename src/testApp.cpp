@@ -593,14 +593,14 @@ void testApp::update(){
                     float distance=towers[i]->pos.distance(foes[k]->p.pos);
                     if ( distance < towers[i]->range +towers[i]->rangePadding && distance<closestDist){
                         
-                        //red can only target foes not immune to red
-                        if (towers[i]->type=="red" && foes[k]->type!="immune_red"){
+                        //red can target anything
+                        if (towers[i]->type=="red"){
                             closestDist=distance;
                             closestID=k;
                         }
                         
-                        //green can shoot goddamn anything
-                        if (towers[i]->type=="green"){
+                        //green can't shoot immune foes
+                        if (towers[i]->type=="green" && foes[k]->type!="immune_red"){
                             closestDist=distance;
                             closestID=k;
                         }
