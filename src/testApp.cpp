@@ -439,6 +439,7 @@ void testApp::reset(){
 
 //--------------------------------------------------------------
 void testApp::update(){
+    cout<<maxCompactness<<endl;
     calibration.update();
     
     //wall image needs updating if that is being set
