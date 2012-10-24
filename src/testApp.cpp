@@ -600,7 +600,7 @@ void testApp::update(){
                         }
                         
                         //green can't shoot immune foes
-                        if (towers[i]->type=="green" && foes[k]->type!="immune_red"){
+                        if (towers[i]->type=="green" && foes[k]->type!="immune"){
                             closestDist=distance;
                             closestID=k;
                         }
@@ -1586,7 +1586,7 @@ void testApp::spawnFoe(string name, int level){
         newFoe->setPics(stealthFoePic[0], stealthFoePic[1]);
         foes.push_back(newFoe);
     }
-    else if (name=="immune_red"){
+    else if (name=="immune"){
         ImmuneRedFoe * newFoe=new ImmuneRedFoe;
         newFoe->setPics(immuneRedFoePic[0], immuneRedFoePic[1]);
         foes.push_back(newFoe);

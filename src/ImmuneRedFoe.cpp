@@ -10,7 +10,7 @@
 
 //------------------------------------------------------------
 void ImmuneRedFoe::typeSetup(int level){
-    type="immune_red";
+    type="immune";
     fullHP=40+ 40*level;    //slightly reduced health
 }
 
